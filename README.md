@@ -1,2 +1,3 @@
-# secure-share
+# Secure Share
+
 Secure File Sharing Application
