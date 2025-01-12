@@ -1,1 +1,5 @@
-npx lint-staged
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd client && npx lint-staged
+cd ../server && pre-commit run --files $(git diff --cached --name-only)

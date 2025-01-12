@@ -37,4 +37,3 @@ repos:
           - types-requests
           - django-stubs
           - types-PyYAML
-          # Add other specific type stubs as needed

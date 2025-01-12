@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "tsc && vite build --mode development",
     "preview": "vite preview",
-    "prepare": "husky",
+    "prepare": "cd .. && husky install client/.husky",
     "lint": "eslint \"src/**/*.{ts,tsx,js}\" --fix --max-warnings=0 && tsc --extendedDiagnostics",
     "format": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
   },
