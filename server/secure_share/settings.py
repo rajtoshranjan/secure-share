@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+from utils.parsers import unwrap_boolean, unwrap_list
+
+from .env_variables import EnvVariable
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-eqq0afx*3pqxz$)e+dxbca4x_4tb2te0)ks4@n3tsnif#zerh1"
+SECRET_KEY = EnvVariable.SECRET_KEY.value
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = unwrap_boolean(EnvVariable.DEBUG.value)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = unwrap_list(EnvVariable.ALLOWED_HOSTS.value)
 
 
 # Application definition
