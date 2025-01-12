@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    env_file:
+      - .env.development
+    environment:
+      - VITE_API_URL=server:8000
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/app
+    env_file:
+      - .env.development
+    command: uvicorn secure_share.asgi:application --host 0.0.0.0 --port 8000 --reload
