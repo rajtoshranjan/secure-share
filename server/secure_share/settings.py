@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 from utils.parsers import unwrap_boolean, unwrap_list
@@ -41,6 +42,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "trench",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -103,6 +108,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "accounts.User"
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -125,3 +132,31 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+TRENCH_AUTH = {
+    "CONFIRM_DISABLE_WITH_CODE": True,
+    "CONFIRM_BACKUP_CODES_REGENERATION_WITH_CODE": True,
+    "BACKUP_CODES_CHARACTERS": "0123456789",
+    "BACKUP_CODES_QUANTITY": 8,
+    "DEFAULT_VALIDITY_PERIOD": 60,
+    "MFA_METHODS": {
+        "app": {
+            "VERBOSE_NAME": "Secure Share",
+            "VALIDITY_PERIOD": 60,
+            "USES_THIRD_PARTY_CLIENT": True,
+            "HANDLER": "trench.backends.application.ApplicationMessageDispatcher",
+        },
+    },
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
