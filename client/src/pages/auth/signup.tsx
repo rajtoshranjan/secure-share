@@ -1,39 +1,78 @@
 import { AlertCircle } from 'lucide-react';
-import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
+  Input,
+  Label,
 } from '../../components/ui';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
+import { handleResponseErrorMessage, useSignup } from '../../services/apis';
+
+// Form validation schema
+const signupSchema = z
+  .object({
+    name: z
+      .string()
+      .min(2, 'Name must be at least 2 characters')
+      .max(100, 'Name must be less than 100 characters'),
+    email: z.string().email('Invalid email address'),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        'Password must contain uppercase, lowercase and numbers',
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
+
+type SignupFormData = z.infer<typeof signupSchema>;
 
 export function SignUpPage() {
-  const [error, setError] = useState<string | null>(null);
+  // Hooks.
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+  });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
+  const {
+    mutate: sendSignupRequest,
+    isPending,
+    isError,
+    error,
+    isSuccess,
+  } = useSignup();
 
-    if (password !== confirmPassword) {
-      setError("Passwords don't match");
-      return;
+  // useEffects.
+  useEffect(() => {
+    if (isSuccess) {
+      navigate('/login');
+    } else {
+      handleResponseErrorMessage(isError, error, setError);
     }
+  }, [isSuccess, isError]);
 
-    console.log('Sign up data:', { email, password });
-    navigate('/login');
+  // Handlers.
+  const onSubmit = (data: SignupFormData) => {
+    sendSignupRequest(data);
   };
 
   return (
@@ -43,32 +82,44 @@ export function SignUpPage() {
         <CardDescription>Create a new account to get started</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="grid gap-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              {...register('name')}
+              id="name"
+              type="text"
+              error={errors.name?.message}
+            />
+          </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" required />
+            <Input
+              {...register('email')}
+              id="email"
+              type="email"
+              error={errors.email?.message}
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" name="password" type="password" required />
+            <Input
+              {...register('password')}
+              id="password"
+              type="password"
+              error={errors.password?.message}
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
             <Input
+              {...register('confirmPassword')}
               id="confirmPassword"
-              name="confirmPassword"
               type="password"
-              required
+              error={errors.confirmPassword?.message}
             />
           </div>
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="size-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" loading={isPending}>
             Sign Up
           </Button>
         </form>

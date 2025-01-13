@@ -25,6 +25,59 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (res) => res.data,
+  async (error): Promise<ApiErrorResponse | null> => {
+    let errorResponse: ApiErrorResponse | null;
+
+    if (error.response?.status >= 500) {
+      errorResponse = {
+        meta: {
+          type: ApiErrorType.ServerError,
+          status_code: error.response.status,
+          message: 'Something went wrong, please try again later.',
+          details: {},
+        },
+        data: {},
+      };
+    } else if (error.message === 'Network Error') {
+      errorResponse = {
+        meta: {
+          type: ApiErrorType.NetworkError,
+          status_code: 503,
+          message:
+            'Network Error Occurred. Please check your internet connection and try again later.',
+          details: {},
+        },
+        data: {},
+      };
+    } else if (error.response?.data) {
+      errorResponse = error.response.data;
+
+      // Handle token related errors
+      switch (errorResponse?.meta.type) {
+        case ApiErrorType.InvalidToken:
+        case ApiErrorType.AuthenticationFailed:
+        case ApiErrorType.TokenBlacklisted:
+          logout();
+          break;
+      }
+    } else {
+      errorResponse = {
+        meta: {
+          type: ApiErrorType.SystemError,
+          status_code: 500,
+          message: error.message,
+          details: {},
+        },
+        data: {},
+      };
+    }
+
+    return Promise.reject(errorResponse);
+  },
+);
+
 export const handleRefreshToken = async () => {
   try {
     const refreshToken = tokenManager.getRefreshToken();

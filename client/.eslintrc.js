@@ -39,6 +39,7 @@ module.exports = {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['warn'],
     '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
     'prettier/prettier': 'error',
     // React rules.
     'react/prop-types': 'off',
