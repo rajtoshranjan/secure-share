@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, UserPlus } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   Table,
@@ -54,7 +54,10 @@ export function UsersPage() {
         <h1 className="text-2xl font-bold">User Management</h1>
         <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
           <DialogTrigger asChild>
-            <Button>Add User</Button>
+            <Button>
+              <UserPlus className="size-4" />
+              Add User
+            </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -115,12 +118,9 @@ export function UsersPage() {
                 </Select>
               </TableCell>
               <TableCell className="text-right">
-                <Button
-                  variant="ghost"
-                  className="text-red-500 hover:text-red-500"
-                  size="sm"
-                >
-                  <Trash2 className="size-4" />
+                <Button variant="destructive" size="sm">
+                  <Trash2 className=" size-4" />
+                  Delete
                 </Button>
               </TableCell>
             </TableRow>

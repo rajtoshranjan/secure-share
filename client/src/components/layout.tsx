@@ -22,13 +22,13 @@ export function Layout() {
           <div className="flex h-12 justify-between">
             <div className="flex">
               <Link to="/" className="flex shrink-0 items-center">
-                <CustomIcons.SafeFile className="size-6 text-primary" />
-                <span className="ml-2 text-xl font-bold">SecureShare</span>
+                <CustomIcons.SafeFile className="size-4 text-primary md:size-6" />
+                <span className="ml-2 font-bold md:text-xl">SecureShare</span>
               </Link>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-0 md:space-x-2">
               <Button variant="ghost">
-                <Link to="/">Dashboard</Link>
+                <Link to="/">Files</Link>
               </Button>
               <Button variant="ghost">
                 <Link to="/users">Users</Link>
@@ -45,7 +45,7 @@ export function Layout() {
           </div>
         </div>
       </nav>
-      <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <Outlet />
       </main>
     </div>

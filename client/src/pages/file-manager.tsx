@@ -56,7 +56,7 @@ const FileTable = ({
       {files.map((file) => (
         <TableRow key={file.id}>
           <TableCell>{file.name}</TableCell>
-          <TableCell>{file.size}</TableCell>
+          <TableCell className="whitespace-nowrap">{file.size}</TableCell>
           <TableCell>{file.lastModified}</TableCell>
           {file.sharedBy && <TableCell>{file.sharedBy}</TableCell>}
           <TableCell className="flex justify-end space-x-2">
@@ -65,15 +65,15 @@ const FileTable = ({
               size="sm"
               onClick={() => onShare(file.id)}
             >
-              <Share className="mr-2 size-4" />
+              <Share className=" size-4" />
               Share
             </Button>
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
               onClick={() => onDelete(file.id)}
             >
-              <Trash2 className="mr-2 size-4" />
+              <Trash2 className="size-4" />
               Delete
             </Button>
           </TableCell>
