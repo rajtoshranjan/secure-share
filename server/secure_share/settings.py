@@ -10,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import string
 from datetime import timedelta
 from pathlib import Path
 
+from corsheaders.defaults import default_headers
 from utils.parsers import unwrap_boolean, unwrap_list
 
 from .env_variables import EnvVariable
@@ -42,9 +44,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
     "trench",
+    # Apps.
     "accounts",
 ]
 
@@ -56,6 +60,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "secure_share.urls"
@@ -135,28 +140,56 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 TRENCH_AUTH = {
-    "CONFIRM_DISABLE_WITH_CODE": True,
+    "USER_MFA_MODEL": "trench.MFAMethod",
+    "USER_ACTIVE_FIELD": "is_active",
+    "BACKUP_CODES_QUANTITY": 5,
+    "BACKUP_CODES_LENGTH": 12,
+    "BACKUP_CODES_CHARACTERS": (string.ascii_letters + string.digits),
+    "SECRET_KEY_LENGTH": 32,
+    "DEFAULT_VALIDITY_PERIOD": 30,
+    "CONFIRM_DISABLE_WITH_CODE": False,
     "CONFIRM_BACKUP_CODES_REGENERATION_WITH_CODE": True,
-    "BACKUP_CODES_CHARACTERS": "0123456789",
-    "BACKUP_CODES_QUANTITY": 8,
-    "DEFAULT_VALIDITY_PERIOD": 60,
+    "ALLOW_BACKUP_CODES_REGENERATION": True,
+    "ENCRYPT_BACKUP_CODES": True,
+    "APPLICATION_ISSUER_NAME": "Secure Share",
     "MFA_METHODS": {
         "app": {
-            "VERBOSE_NAME": "Secure Share",
+            "VERBOSE_NAME": "app",
             "VALIDITY_PERIOD": 60,
             "USES_THIRD_PARTY_CLIENT": True,
-            "HANDLER": "trench.backends.application.ApplicationMessageDispatcher",
+            "HANDLER": (
+                "trench.backends.application.ApplicationMessageDispatcher",
+            ),
         },
     },
 }
 
 REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "secure_share.exceptions.handler.custom_exception_handler",
+    "DEFAULT_RENDERER_CLASSES": ["secure_share.response_renderer.CustomJsonRender"],
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=20),
 }
+
+# CORS.
+if DEBUG:
+    CORS_ORIGIN_ALLOW_ALL = True
+else:
+    CORS_ALLOWED_ORIGINS = [EnvVariable.FRONTEND_URL.value]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+CORS_ALLOW_HEADERS = default_headers

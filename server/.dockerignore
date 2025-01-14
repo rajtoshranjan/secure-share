@@ -18,7 +18,7 @@ coverage.xml
 .env*
 .venv
 .git
-.gitignore 
+.gitignore
 .env.template
 virtual-env
 .DS_Store
