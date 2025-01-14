@@ -1,5 +1,5 @@
 export enum ApiErrorType {
-  InvalidToken = 'InvalidToken',
+  TokenError = 'TokenError',
   ValidationError = 'ValidationError',
   SystemError = 'SystemError',
   TokenBlacklisted = 'TokenBlacklisted',

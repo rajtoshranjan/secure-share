@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { EnvVariables } from '../../config';
-import { tokenManager } from '../../utils';
+import { tokenManager } from '../../lib/utils';
 import { ApiErrorType } from './enums';
 import { logout } from './helpers';
 import { ApiErrorResponse, ApiResponse, RefreshTokenResponse } from './types';
@@ -36,7 +36,6 @@ api.interceptors.response.use(
           type: ApiErrorType.ServerError,
           status_code: error.response.status,
           message: 'Something went wrong, please try again later.',
-          details: {},
         },
         data: {},
       };
@@ -47,7 +46,6 @@ api.interceptors.response.use(
           status_code: 503,
           message:
             'Network Error Occurred. Please check your internet connection and try again later.',
-          details: {},
         },
         data: {},
       };
@@ -56,7 +54,6 @@ api.interceptors.response.use(
 
       // Handle token related errors
       switch (errorResponse?.meta.type) {
-        case ApiErrorType.InvalidToken:
         case ApiErrorType.AuthenticationFailed:
         case ApiErrorType.TokenBlacklisted:
           logout();
@@ -68,7 +65,6 @@ api.interceptors.response.use(
           type: ApiErrorType.SystemError,
           status_code: 500,
           message: error.message,
-          details: {},
         },
         data: {},
       };
@@ -82,11 +78,12 @@ export const handleRefreshToken = async () => {
   try {
     const refreshToken = tokenManager.getRefreshToken();
     if (refreshToken) {
+      console.log('refreshToken', refreshToken);
       const res = await api.post<
         Record<string, string>,
         ApiResponse<RefreshTokenResponse>
       >('/accounts/token/refresh/', {
-        refresh: tokenManager.getRefreshToken(),
+        refresh: refreshToken,
       });
 
       if (res.data.access) {
@@ -95,9 +92,8 @@ export const handleRefreshToken = async () => {
     } else {
       logout();
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
-    if (e.meta?.type === ApiErrorType.InvalidToken) {
+    if (e.meta?.type === ApiErrorType.TokenError) {
       logout();
     }
   }
@@ -107,7 +103,7 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (_, error) => {
-        if (error.meta.type === ApiErrorType.InvalidToken) {
+        if (error.meta.type === ApiErrorType.TokenError) {
           handleRefreshToken();
           return true;
         }
@@ -119,7 +115,8 @@ export const queryClient = new QueryClient({
     },
     mutations: {
       retry: (_, error) => {
-        if (error.meta.type === ApiErrorType.InvalidToken) {
+        console.log('error', error);
+        if (error.meta.type === ApiErrorType.TokenError) {
           handleRefreshToken();
           return true;
         }

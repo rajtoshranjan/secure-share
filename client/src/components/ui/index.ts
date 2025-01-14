@@ -7,3 +7,4 @@ export * from './label';
 export * from './select';
 export * from './table';
 export * from './toast';
+export * from './dropdown-menu';

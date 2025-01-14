@@ -17,4 +17,7 @@ export const tokenManager = {
   removeRefreshToken: () => {
     localStorage.removeItem('refreshToken');
   },
+  hasToken: () => {
+    return !!localStorage.getItem('token');
+  },
 };

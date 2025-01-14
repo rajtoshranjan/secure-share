@@ -1,27 +1,18 @@
-import { LogOut, Moon, Sun } from 'lucide-react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { Theme, useTheme } from '../hooks';
+import { Moon, Sun } from 'lucide-react';
+import { Link, Outlet } from 'react-router-dom';
+import { Theme } from '../hooks';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { toggleTheme } from '../store/slices/theme-slice';
 import { CustomIcons } from './icons';
 import { Button } from './ui/button';
+import { UserNav } from './user-nav';
 
 export function Layout() {
-  // States.
-  const { theme, setTheme } = useTheme();
+  const dispatch = useAppDispatch();
+  const theme = useAppSelector((state) => state.theme.current);
 
-  // Hooks.
-  const navigate = useNavigate();
-
-  // Handlers.
-  const toggleTheme = () => {
-    setTheme((prev) => {
-      if (prev === Theme.Dark) return Theme.Light;
-      else return Theme.Dark;
-    });
-  };
-
-  const handleLogout = () => {
-    // TODO: Implement actual logout logic here
-    navigate('/login');
+  const handleThemeChange = () => {
+    dispatch(toggleTheme());
   };
 
   return (
@@ -36,22 +27,20 @@ export function Layout() {
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" asChild>
+              <Button variant="ghost">
                 <Link to="/">Dashboard</Link>
               </Button>
-              <Button variant="ghost" asChild>
+              <Button variant="ghost">
                 <Link to="/users">Users</Link>
               </Button>
-              <Button variant="ghost" onClick={toggleTheme} size="icon">
-                {theme === 'dark' ? (
+              <Button variant="ghost" onClick={handleThemeChange} size="icon">
+                {theme === Theme.Dark ? (
                   <Sun className="size-5" />
                 ) : (
                   <Moon className="size-5" />
                 )}
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="size-5" />
-              </Button>
+              <UserNav />
             </div>
           </div>
         </div>

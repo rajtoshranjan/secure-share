@@ -3,7 +3,6 @@ import { ApiErrorType } from './enums';
 export type ApiMeta = {
   status_code: number;
   type: ApiErrorType;
-  details?: Record<string, string[]>;
   message?: string;
 };
 

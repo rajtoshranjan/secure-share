@@ -10,8 +10,10 @@ export type SignupRequestPayload = {
 };
 
 export type LoginResponse = {
-  access: string;
-  refresh: string;
+  access?: string;
+  refresh?: string;
+  ephemeral_token?: string;
+  method?: 'app';
 };
 
 export type SignupResponseDataFromServer = {
@@ -29,3 +31,9 @@ export type SignupResponseData = {
   isActive: boolean;
   lastLogin: string | null;
 };
+
+export type ActivateMFAData = {
+  details: string;
+};
+
+export type MFAMethod = 'app';

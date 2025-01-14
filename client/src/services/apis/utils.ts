@@ -1,4 +1,4 @@
-import { Formatter } from '../../utils';
+import { Formatter } from '../../lib/utils';
 
 /**
  * Converts snake_case json response to camelCase response
