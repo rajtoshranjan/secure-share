@@ -8,7 +8,7 @@ import { CustomRouter } from './lib/custom-router';
 import { history } from './lib/utils';
 import {
   AuthLayout,
-  DashboardPage,
+  FileManagementPage,
   LoginPage,
   SignUpPage,
   UsersPage,
@@ -32,7 +32,7 @@ function App() {
             {/* Protected routes */}
             <Route element={<AuthGuard />}>
               <Route element={<Layout />}>
-                <Route index element={<DashboardPage />} />
+                <Route index element={<FileManagementPage />} />
                 <Route path="users" element={<UsersPage />} />
               </Route>
             </Route>

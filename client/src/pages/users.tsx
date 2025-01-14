@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   Table,
@@ -27,9 +28,9 @@ import {
 
 export function UsersPage() {
   const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User' },
+    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'admin' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'regular' },
+    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'guest' },
   ]);
 
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
@@ -93,7 +94,7 @@ export function UsersPage() {
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -101,10 +102,25 @@ export function UsersPage() {
             <TableRow key={user.id}>
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.role}</TableCell>
               <TableCell>
-                <Button variant="outline" size="sm">
-                  Edit
+                <Select defaultValue={user.role}>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="regular">Regular</SelectItem>
+                    <SelectItem value="guest">Guest</SelectItem>
+                  </SelectContent>
+                </Select>
+              </TableCell>
+              <TableCell className="text-right">
+                <Button
+                  variant="ghost"
+                  className="text-red-500 hover:text-red-500"
+                  size="sm"
+                >
+                  <Trash2 className="size-4" />
                 </Button>
               </TableCell>
             </TableRow>
