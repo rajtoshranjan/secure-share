@@ -18,9 +18,9 @@ export const MFASetup: React.FC<MFASetupProps> = ({ open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {isMfaActive ? 'Deactivate' : 'Set up'} two-factor authentication
-          </DialogTitle>
+          {!isMfaActive && (
+            <DialogTitle>Setup two-factor authentication</DialogTitle>
+          )}
         </DialogHeader>
         {isMfaActive ? (
           <MFADeactivate onDeactivationSuccess={refetchMethods} />

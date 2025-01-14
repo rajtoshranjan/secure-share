@@ -126,7 +126,7 @@ export function FileManagementPage() {
     }
   };
 
-  const handleShare = (id: number) => {
+  const handleShare = () => {
     setIsShareModalOpen(true);
     // Implement sharing logic here
   };
