@@ -9,12 +9,12 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
 import string
 from datetime import timedelta
 from pathlib import Path
 
 from corsheaders.defaults import default_headers
+from django.utils.translation import gettext_lazy as _
 from utils.parsers import unwrap_boolean, unwrap_list
 
 from .env_variables import EnvVariable
@@ -47,9 +47,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
-    "trench",
-    # Apps.
     "accounts",
+    "trench",
 ]
 
 MIDDLEWARE = [
@@ -154,13 +153,14 @@ TRENCH_AUTH = {
     "APPLICATION_ISSUER_NAME": "Secure Share",
     "MFA_METHODS": {
         "app": {
-            "VERBOSE_NAME": "app",
-            "VALIDITY_PERIOD": 60,
+            "VERBOSE_NAME": _("app"),
+            "VALIDITY_PERIOD": 30,
             "USES_THIRD_PARTY_CLIENT": True,
             "HANDLER": "trench.backends.application.ApplicationMessageDispatcher",
         },
     },
 }
+
 
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "secure_share.exceptions.handler.custom_exception_handler",
