@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import os
 import string
 from datetime import timedelta
 from pathlib import Path
@@ -47,8 +48,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
-    "accounts",
     "trench",
+    # Apps.
+    "accounts",
+    "files",
 ]
 
 MIDDLEWARE = [
@@ -191,3 +194,8 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 CORS_ALLOW_HEADERS = default_headers
+
+
+# File upload settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

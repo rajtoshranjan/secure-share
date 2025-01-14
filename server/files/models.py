@@ -40,6 +40,7 @@ class File(BaseModel):
     def size(self):
         return self.file.size
 
+    # TODO: Implement AES encryption.
     def encrypt_file(self):
         """
         Encrypts the file using Fernet symmetric encryption.
