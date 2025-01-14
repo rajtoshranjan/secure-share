@@ -78,7 +78,6 @@ export const handleRefreshToken = async () => {
   try {
     const refreshToken = tokenManager.getRefreshToken();
     if (refreshToken) {
-      console.log('refreshToken', refreshToken);
       const res = await api.post<
         Record<string, string>,
         ApiResponse<RefreshTokenResponse>
@@ -115,7 +114,6 @@ export const queryClient = new QueryClient({
     },
     mutations: {
       retry: (_, error) => {
-        console.log('error', error);
         if (error.meta.type === ApiErrorType.TokenError) {
           handleRefreshToken();
           return true;
