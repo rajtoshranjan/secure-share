@@ -67,58 +67,48 @@ export function LoginPage() {
     mutate: sendLoginRequest,
     isPending: isLoginPending,
     isError: isLoginError,
-    error: loginError,
-    isSuccess: isLoginSuccess,
-    data: loginResponse,
   } = useLogin();
 
   const {
     mutate: sendVerifyRequest,
     isPending: isVerifyPending,
     isError: isVerifyError,
-    error: verifyError,
-    isSuccess: isVerifySuccess,
-    data: verifyResponse,
   } = useVerifyMFA();
-
-  // Effects.
-  useEffect(() => {
-    if (isLoginSuccess && loginResponse?.data) {
-      if (loginResponse.data.ephemeral_token) {
-        setEphemeralToken(loginResponse.data.ephemeral_token);
-        setStep('mfa-verify');
-      } else if (loginResponse.data.access && loginResponse.data.refresh) {
-        tokenManager.setToken(loginResponse.data.access);
-        tokenManager.setRefreshToken(loginResponse.data.refresh);
-        navigate('/');
-      }
-    } else {
-      handleResponseErrorMessage(isLoginError, loginError, setLoginError);
-    }
-  }, [isLoginSuccess, isLoginError]);
-
-  useEffect(() => {
-    if (
-      isVerifySuccess &&
-      verifyResponse?.data?.access &&
-      verifyResponse?.data?.refresh
-    ) {
-      tokenManager.setToken(verifyResponse.data.access);
-      tokenManager.setRefreshToken(verifyResponse.data.refresh);
-      navigate('/');
-    } else {
-      handleResponseErrorMessage(isVerifyError, verifyError, setMFAError);
-    }
-  }, [isVerifySuccess, isVerifyError]);
 
   // Handlers.
   const onLoginSubmit = (data: LoginFormData) => {
-    sendLoginRequest(data);
+    sendLoginRequest(data, {
+      onSuccess: (response) => {
+        if ('ephemeral_token' in response.data) {
+          setEphemeralToken(response.data.ephemeral_token);
+          setStep('mfa-verify');
+        } else {
+          tokenManager.setToken(response.data.access);
+          tokenManager.setRefreshToken(response.data.refresh);
+          navigate('/');
+        }
+      },
+      onError: (error) => {
+        handleResponseErrorMessage(error, setLoginError);
+      },
+    });
   };
 
   const onMFASubmit = (data: MFAFormData) => {
     if (!ephemeralToken) return;
-    sendVerifyRequest({ ephemeral_token: ephemeralToken, code: data.code });
+    sendVerifyRequest(
+      { ephemeral_token: ephemeralToken, code: data.code },
+      {
+        onSuccess: (response) => {
+          tokenManager.setToken(response.data.access);
+          tokenManager.setRefreshToken(response.data.refresh);
+          navigate('/');
+        },
+        onError: (error) => {
+          handleResponseErrorMessage(error, setMFAError);
+        },
+      },
+    );
   };
 
   return (

@@ -16,7 +16,7 @@ import {
 } from '../../components/ui';
 import { handleResponseErrorMessage, useSignup } from '../../services/apis';
 
-// Form validation schema
+// Form validation schema.
 const signupSchema = z
   .object({
     name: z
@@ -52,26 +52,19 @@ export function SignUpPage() {
     resolver: zodResolver(signupSchema),
   });
 
-  const {
-    mutate: sendSignupRequest,
-    isPending,
-    isError,
-    error,
-    isSuccess,
-  } = useSignup();
-
-  // useEffects.
-  useEffect(() => {
-    if (isSuccess) {
-      navigate('/login');
-    } else {
-      handleResponseErrorMessage(isError, error, setError);
-    }
-  }, [isSuccess, isError]);
+  // Queries.
+  const { mutate: sendSignupRequest, isPending } = useSignup();
 
   // Handlers.
   const onSubmit = (data: SignupFormData) => {
-    sendSignupRequest(data);
+    sendSignupRequest(data, {
+      onSuccess: () => {
+        navigate('/login');
+      },
+      onError: (error) => {
+        handleResponseErrorMessage(error, setError);
+      },
+    });
   };
 
   return (

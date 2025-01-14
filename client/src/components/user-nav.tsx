@@ -1,7 +1,7 @@
 import { User } from 'lucide-react';
 import { useState } from 'react';
 import { logout } from '../services/apis/helpers';
-import { MFASetup } from './mfa-setup';
+import { MFASetup } from './mfa';
 import {
   Button,
   DropdownMenu,

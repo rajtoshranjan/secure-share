@@ -31,11 +31,10 @@ export const getErrorMessages = (error: ApiErrorResponse) => {
 };
 
 export const handleResponseErrorMessage = (
-  isError: boolean,
   error?: ApiErrorResponse | null,
   setError?: UseFormSetError<any>,
 ) => {
-  if (isError && error && error.meta.status_code !== 401) {
+  if (error && error.meta.status_code !== 401) {
     if (setError && error.data) {
       Object.entries(error.data).forEach(([field, errors]) => {
         if (Array.isArray(errors) && errors.length > 0) {

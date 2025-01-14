@@ -9,12 +9,17 @@ export type SignupRequestPayload = {
   name: string;
 };
 
-export type LoginResponse = {
-  access?: string;
-  refresh?: string;
-  ephemeral_token?: string;
-  method?: 'app';
+export type LoginMFAverifyResponse = {
+  access: string;
+  refresh: string;
 };
+
+export type LoginResponse =
+  | LoginMFAverifyResponse
+  | {
+      ephemeral_token: string;
+      method: 'app';
+    };
 
 export type SignupResponseDataFromServer = {
   id: string;
@@ -37,3 +42,13 @@ export type ActivateMFAData = {
 };
 
 export type MFAMethod = 'app';
+
+export type MFAMethodInfoFromServer = {
+  name: MFAMethod;
+  is_primary: boolean;
+};
+
+export type MFAMethodInfo = {
+  name: MFAMethod;
+  isPrimary: boolean;
+};

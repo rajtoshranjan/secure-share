@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { ApiResponse } from '../types';
 
 import api from '../setup';
@@ -11,6 +11,9 @@ import {
   SignupRequestPayload,
   SignupResponseData,
   SignupResponseDataFromServer,
+  MFAMethodInfo,
+  MFAMethodInfoFromServer,
+  LoginMFAverifyResponse,
 } from './types';
 
 // APIs.
@@ -31,7 +34,7 @@ export const signupRequest = async (
   payload: SignupRequestPayload,
 ): Promise<ApiResponse<SignupResponseData>> => {
   const res = await api.post<
-    SignupRequestPayload,
+    SignupResponseDataFromServer,
     ApiResponse<SignupResponseDataFromServer>
   >('/accounts/signup/', payload);
 
@@ -47,11 +50,11 @@ export const signupRequest = async (
 export const verifyMFARequest = async (payload: {
   ephemeral_token: string;
   code: string;
-}): Promise<ApiResponse<LoginResponse>> => {
-  const res = await api.post<LoginResponse, ApiResponse<LoginResponse>>(
-    '/accounts/login/code/',
-    payload,
-  );
+}): Promise<ApiResponse<LoginMFAverifyResponse>> => {
+  const res = await api.post<
+    LoginResponse,
+    ApiResponse<LoginMFAverifyResponse>
+  >('/accounts/login/code/', payload);
   return res;
 };
 
@@ -75,6 +78,32 @@ export const confirmMFARequest = async (payload: {
     code: payload.code,
   });
   return res;
+};
+
+export const getActiveMFAMethodsRequest = async (): Promise<
+  ApiResponse<MFAMethodInfo[]>
+> => {
+  const res = await api.get<
+    MFAMethodInfoFromServer[],
+    ApiResponse<MFAMethodInfoFromServer[]>
+  >('/accounts/mfa/mfa/user-active-methods/');
+
+  return {
+    ...res,
+    data: res.data.map((method) => ({
+      name: method.name,
+      isPrimary: method.is_primary,
+    })),
+  };
+};
+
+export const deactivateMFARequest = async (payload: {
+  method: MFAMethod;
+  code: string;
+}): Promise<ApiResponse<void>> => {
+  return api.post(`/accounts/mfa/${payload.method}/deactivate/`, {
+    code: payload.code,
+  });
 };
 
 // Hooks.
@@ -101,4 +130,15 @@ export const useActivateMFA = () =>
 export const useConfirmMFA = () =>
   useMutation({
     mutationFn: confirmMFARequest,
+  });
+
+export const useGetActiveMFAMethods = () =>
+  useQuery({
+    queryKey: ['activeMFAMethods'],
+    queryFn: getActiveMFAMethodsRequest,
+  });
+
+export const useDeactivateMFA = () =>
+  useMutation({
+    mutationFn: deactivateMFARequest,
   });
