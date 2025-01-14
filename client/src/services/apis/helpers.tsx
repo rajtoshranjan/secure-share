@@ -49,6 +49,7 @@ export const handleResponseErrorMessage = (
       toast({
         title: error.meta?.message,
         description: getErrorMessages(error),
+        variant: 'destructive',
       });
     }
   }

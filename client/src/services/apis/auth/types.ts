@@ -21,20 +21,9 @@ export type LoginResponse =
       method: 'app';
     };
 
-export type SignupResponseDataFromServer = {
-  id: string;
+export type UserInfo = {
   email: string;
   name: string;
-  is_active: boolean;
-  last_login: string | null;
-};
-
-export type SignupResponseData = {
-  id: string;
-  email: string;
-  name: string;
-  isActive: boolean;
-  lastLogin: string | null;
 };
 
 export type ActivateMFAData = {

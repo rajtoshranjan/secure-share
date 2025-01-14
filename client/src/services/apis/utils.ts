@@ -1,4 +1,4 @@
-import { Formatter } from '../../lib/utils';
+import { StringFormatter } from '../../lib/utils';
 
 /**
  * Converts snake_case json response to camelCase response
@@ -6,7 +6,7 @@ import { Formatter } from '../../lib/utils';
 export const apiDataResponseMapper = <T extends object, P extends object>(
   response: T,
 ): P => {
-  return Formatter.convertKeysSnakeToCamelCase<P>(response);
+  return StringFormatter.convertKeysSnakeToCamelCase<P>(response);
 };
 
 /**
@@ -15,5 +15,5 @@ export const apiDataResponseMapper = <T extends object, P extends object>(
 export const apiPayloadMapper = <T extends object, P extends object>(
   response: T,
 ): P => {
-  return Formatter.convertKeysCamelCaseToSnakeCase<P>(response);
+  return StringFormatter.convertKeysCamelCaseToSnakeCase<P>(response);
 };

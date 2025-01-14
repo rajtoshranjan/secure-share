@@ -2,15 +2,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { ApiResponse } from '../types';
 
 import api from '../setup';
-import { apiDataResponseMapper } from '../utils';
 import {
   ActivateMFAData,
   LoginRequestPayload,
   LoginResponse,
   MFAMethod,
   SignupRequestPayload,
-  SignupResponseData,
-  SignupResponseDataFromServer,
+  UserInfo,
   MFAMethodInfo,
   MFAMethodInfoFromServer,
   LoginMFAverifyResponse,
@@ -32,19 +30,8 @@ export const loginRequest = async (
 
 export const signupRequest = async (
   payload: SignupRequestPayload,
-): Promise<ApiResponse<SignupResponseData>> => {
-  const res = await api.post<
-    SignupResponseDataFromServer,
-    ApiResponse<SignupResponseDataFromServer>
-  >('/accounts/signup/', payload);
-
-  return {
-    ...res,
-    data: apiDataResponseMapper<
-      SignupResponseDataFromServer,
-      SignupResponseData
-    >(res.data),
-  };
+): Promise<ApiResponse<UserInfo>> => {
+  return await api.post<UserInfo, ApiResponse<UserInfo>>('/accounts/', payload);
 };
 
 export const verifyMFARequest = async (payload: {
@@ -106,6 +93,10 @@ export const deactivateMFARequest = async (payload: {
   });
 };
 
+export const getUsersRequest = async (): Promise<ApiResponse<UserInfo[]>> => {
+  return await api.get<UserInfo[], ApiResponse<UserInfo[]>>('/accounts/');
+};
+
 // Hooks.
 export const useLogin = () =>
   useMutation({
@@ -141,4 +132,10 @@ export const useGetActiveMFAMethods = () =>
 export const useDeactivateMFA = () =>
   useMutation({
     mutationFn: deactivateMFARequest,
+  });
+
+export const useGetUsers = () =>
+  useQuery({
+    queryKey: ['users'],
+    queryFn: getUsersRequest,
   });

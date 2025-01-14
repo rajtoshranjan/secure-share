@@ -11,3 +11,4 @@ export * from './table';
 export * from './tabs';
 export * from './toast';
 export * from './tooltip';
+export * from './spinner';
