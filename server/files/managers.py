@@ -11,7 +11,7 @@ class FileShareLinkManager(models.Manager):
 
         for _ in range(MAX_ATTEMPTS):
             slug = generate(alphabet, 8)
-            if not self.model.objects.get(slug=slug):
+            if not self.model.objects.filter(slug=slug).exists():
                 return slug
 
         raise ValueError("Could not generate unique slug after multiple attempts")

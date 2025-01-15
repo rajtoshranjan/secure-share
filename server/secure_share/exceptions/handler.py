@@ -80,16 +80,22 @@ def handle_method_not_allowed(exc, context, response):
 
 def handle_generic_error(exc, context, response):
     """Handle any unhandled exceptions."""
-    status_code = (
-        response.status_code if response else status.HTTP_500_INTERNAL_SERVER_ERROR
-    )
-    message = str(exc) if str(exc) else "Internal server error"
+
+    if not response:
+        return Response(
+            {
+                "success": False,
+                "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "message": "Internal server error",
+                "type": "ServerError",
+            }
+        )
 
     return Response(
         {
             "success": False,
-            "status_code": status_code,
-            "message": message,
+            "status_code": response.status_code,
+            "message": str(exc) if str(exc) else "Something went wrong",
             "type": exc.__class__.__name__,
             "data": getattr(exc, "detail", {}),
         }
@@ -109,13 +115,11 @@ handlers = {
 
 def custom_exception_handler(exc, context):
     """
-
     Custom exception handler for consistent error responses.
     """
     exception_class = exc.__class__.__name__
     response = exception_handler(exc, context)
-    # print(response)
-    # print(exception_class)
+
     if exception_class in handlers:
         return handlers[exception_class](exc, context, response)
     return handle_generic_error(exc, context, response)

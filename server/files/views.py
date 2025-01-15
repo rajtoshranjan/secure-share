@@ -1,15 +1,17 @@
 from django.http import FileResponse
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
 from .models import File, FileShare, FileShareLink
 from .serializers import (FileSerializer, FileShareLinkSerializer,
                           FileShareSerializer)
 
 
-class FileViewSet(viewsets.ModelViewSet):
+class FileViewSet(ModelViewSet):
     serializer_class = FileSerializer
     permission_classes = [IsAuthenticated]
 
@@ -34,11 +36,6 @@ class FileViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = f'attachment; filename="{file.name}"'
         return response
 
-    @action(detail=False, methods=['get'])
-    def owned(self, request):
-        files = File.objects.filter(owner=request.user)
-        serializer = self.get_serializer(files, many=True)
-        return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def shared(self, request):
@@ -47,7 +44,7 @@ class FileViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class FileShareViewSet(viewsets.ModelViewSet):
+class FileShareViewSet(ModelViewSet):
     serializer_class = FileShareSerializer
     permission_classes = [IsAuthenticated]
 
@@ -55,16 +52,47 @@ class FileShareViewSet(viewsets.ModelViewSet):
         return FileShare.objects.filter(file__owner=self.request.user)
 
     def perform_create(self, serializer):
-        # Ensure user owns the file being shared
+        # Ensure user owns the file being shared.
         file = serializer.validated_data['file']
         if file.owner != self.request.user:
             raise PermissionError("You can only share files you own")
         serializer.save()
 
 
-class FileShareLinkViewSet(viewsets.ModelViewSet):
+class FileShareLinkViewSet(ModelViewSet):
     serializer_class = FileShareLinkSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return FileShareLink.objects.filter(file__owner=self.request.user)
+        return FileShareLink.objects.filter(file__owner=self.request.user, expires_at__gte=timezone.now())
+
+    def perform_create(self, serializer):
+        # Ensure user owns the file being shared.
+        file = serializer.validated_data['file']
+        if file.owner != self.request.user:
+            raise PermissionError("You can only share files you own")
+        serializer.save()
+
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    def download(self, request, pk=None):
+        share_link = get_object_or_404(FileShareLink, slug=pk)
+        
+        # Check if link has expired.
+        if share_link.is_expired:
+            return render(request, 'link_expired.html')
+
+        
+        file = share_link.file
+        decrypted_file = file.get_decrypted_file()
+        
+        response = FileResponse(
+            decrypted_file,
+            as_attachment=True,
+            filename=file.name
+        )
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = f'attachment; filename="{file.name}"'
+        
+        return response
+        
+

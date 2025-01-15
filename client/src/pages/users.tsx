@@ -120,7 +120,6 @@ export function UsersPage() {
               <TableCell className="text-right">
                 <Button variant="destructive" size="sm">
                   <Trash2 className=" size-4" />
-                  Delete
                 </Button>
               </TableCell>
             </TableRow>

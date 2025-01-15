@@ -14,6 +14,7 @@ import { FileTable } from './files-table';
 export function FileManagementPage() {
   // States.
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [activeFileId, setActiveFileId] = useState<string | null>(null);
 
   // Queries.
   const {
@@ -25,9 +26,10 @@ export function FileManagementPage() {
   const { mutate: deleteFile } = useDeleteFile();
   const { mutate: downloadFile } = useDownloadFile();
 
+  // Handlers.
   const handleShare = (id: string) => {
+    setActiveFileId(id);
     setIsShareModalOpen(true);
-    // Implement sharing logic here
   };
 
   const handleDownload = (id: string) => {
@@ -101,6 +103,7 @@ export function FileManagementPage() {
       <FileShareDialog
         open={isShareModalOpen}
         onOpenChange={setIsShareModalOpen}
+        fileId={activeFileId ?? ''}
       />
     </div>
   );

@@ -11,9 +11,10 @@ export type FileShareDataFromServer = {
   id: string;
   file: string;
   user: string;
-  can_write: boolean;
+  can_download: boolean;
   file_name: string;
   shared_with_name: string;
+  shared_with_email: string;
 };
 
 export type FileShareLinkDataFromServer = {
@@ -23,7 +24,7 @@ export type FileShareLinkDataFromServer = {
   expires_at: string;
 };
 
-// Client types
+// Client types (camelCase)
 export type FileData = {
   id: string;
   name: string;
@@ -36,12 +37,24 @@ export type FileShareData = {
   id: string;
   file: string;
   user: string;
-  canWrite: boolean;
+  canDownload: boolean;
   fileName: string;
   sharedWithName: string;
+  sharedWithEmail: string;
 };
 
-export type FileShareLinkData = {
+export type ShareWithUserPayload = {
+  file: string;
+  email: string;
+  canDownload: boolean;
+};
+
+export type GenerateShareLinkPayload = {
+  file: string; // file id
+  expiresAt: string;
+};
+
+export type ShareLinkResponse = {
   id: string;
   file: string;
   slug: string;

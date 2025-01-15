@@ -5,6 +5,8 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
+from rest_framework.exceptions import ValidationError
+from django.utils import timezone
 from secure_share.models import BaseModel
 
 from .managers import FileShareLinkManager
@@ -123,7 +125,7 @@ class FileShare(BaseModel):
         on_delete=models.CASCADE,
         related_name='shared_files'
     )
-    can_write = models.BooleanField(default=False)
+    can_download = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('file', 'user')
@@ -142,4 +144,19 @@ class FileShareLink(BaseModel):
         db_index=True,
     )
 
+    def clean(self):
+        # Validate that expires_at is not in the past
+        if self.expires_at < timezone.now():
+            raise ValidationError({'expires_at': 'Expiry date cannot be in the past'})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    # Properties.
+    @property
+    def is_expired(self):
+        return self.expires_at < timezone.now()
+
+    # Managers.
     objects = FileShareLinkManager()

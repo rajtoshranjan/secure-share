@@ -12,6 +12,7 @@ import {
   LoginPage,
   SignUpPage,
   UsersPage,
+  FileShareLinkDownload,
 } from './pages';
 import { store } from './store';
 
@@ -36,6 +37,9 @@ function App() {
                 <Route path="users" element={<UsersPage />} />
               </Route>
             </Route>
+
+            {/* Unprotected route */}
+            <Route path="/files/:slug" element={<FileShareLinkDownload />} />
 
             {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" replace />} />

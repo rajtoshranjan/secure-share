@@ -118,4 +118,26 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  input[type='date']::-webkit-calendar-picker-indicator {
+    @apply cursor-pointer rounded-sm opacity-70 transition-opacity hover:opacity-100;
+    filter: invert(0.5);
+    padding: 6px;
+    margin-right: 4px;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  input[type='date'] {
+    @apply relative pr-10;
+  }
+
+  .dark input[type='date']::-webkit-calendar-picker-indicator {
+    @apply opacity-60 hover:opacity-90;
+    filter: invert(0.8);
+  }
 }
