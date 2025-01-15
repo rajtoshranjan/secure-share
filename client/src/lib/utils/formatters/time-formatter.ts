@@ -7,7 +7,7 @@ export class TimeFormatter {
     const diff = targetDate.getTime() - now.getTime();
 
     if (diff <= 0) {
-      return 'expired';
+      return '0 seconds';
     }
 
     // Use lodash's built-in date formatting

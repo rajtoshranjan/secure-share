@@ -57,46 +57,62 @@ export const FileTable: React.FC<FileTableProps> = ({
           </TableCell>
         </TableRow>
       ) : (
-        files.map((file) => (
-          <TableRow key={file.id}>
-            <TableCell title={file.name}>
-              {StringFormatter.truncate(file.name, 50)}
-            </TableCell>
-            <TableCell className="whitespace-nowrap">
-              {formatBytes(file.size)}
-            </TableCell>
-            <TableCell>{formatDate(file.createdAt)}</TableCell>
-            <TableCell className="flex justify-end space-x-2">
-              {onDownload && file.canDownload !== false && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onDownload(file)}
-                >
-                  <Download className="size-4" />
-                </Button>
-              )}
-              {onShare && file.canShare !== false && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onShare(file.id)}
-                >
-                  <Share2 className="size-4" />
-                </Button>
-              )}
-              {onDelete && file.canDelete !== false && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => onDelete(file.id)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              )}
-            </TableCell>
-          </TableRow>
-        ))
+        files.map((file) => {
+          const canDownloadFile = onDownload && file.canDownload !== false;
+          const canShareFile = onShare && file.canShare !== false;
+          const canDeleteFile = onDelete && file.canDelete !== false;
+          const hasNoActions =
+            !canDownloadFile && !canShareFile && !canDeleteFile;
+
+          return (
+            <TableRow key={file.id}>
+              <TableCell title={file.name}>
+                {StringFormatter.truncate(file.name, 50)}
+              </TableCell>
+              <TableCell className="whitespace-nowrap">
+                {formatBytes(file.size)}
+              </TableCell>
+              <TableCell>{formatDate(file.createdAt)}</TableCell>
+              <TableCell className="flex justify-end space-x-2">
+                {hasNoActions ? (
+                  <span className="text-sm text-muted-foreground">
+                    No actions allowed
+                  </span>
+                ) : (
+                  <>
+                    {canDownloadFile && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onDownload(file)}
+                      >
+                        <Download className="size-4" />
+                      </Button>
+                    )}
+                    {canShareFile && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onShare(file.id)}
+                      >
+                        <Share2 className="size-4" />
+                      </Button>
+                    )}
+                    {canDeleteFile && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => onDelete(file.id)}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    )}
+                  </>
+                )}
+              </TableCell>
+            </TableRow>
+          );
+        })
       )}
     </TableBody>
   </Table>
