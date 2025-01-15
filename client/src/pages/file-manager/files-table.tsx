@@ -1,7 +1,18 @@
-import { Download, Share2, Trash2 } from 'lucide-react';
+import {
+  Ban,
+  Download,
+  Info,
+  MoreVertical,
+  Share2,
+  Trash2,
+} from 'lucide-react';
 import React from 'react';
 import {
   Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   Spinner,
   Table,
   TableBody,
@@ -40,7 +51,7 @@ export const FileTable: React.FC<FileTableProps> = ({
         <TableHead>Name</TableHead>
         <TableHead>Size</TableHead>
         <TableHead>Uploaded At</TableHead>
-        <TableHead className="text-right">Actions</TableHead>
+        <TableHead className="w-[50px]" />
       </TableRow>
     </TableHeader>
     <TableBody>
@@ -73,42 +84,49 @@ export const FileTable: React.FC<FileTableProps> = ({
                 {formatBytes(file.size)}
               </TableCell>
               <TableCell>{formatDate(file.createdAt)}</TableCell>
-              <TableCell className="flex justify-end space-x-2">
-                {hasNoActions ? (
-                  <span className="text-sm text-muted-foreground">
-                    No actions allowed
-                  </span>
-                ) : (
-                  <>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="size-8 p-0">
+                      <MoreVertical className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {hasNoActions && (
+                      <div className="flex items-center gap-2 p-2 text-sm text-muted-foreground">
+                        <Ban className="size-4" />
+                        No actions allowed
+                      </div>
+                    )}
                     {canDownloadFile && (
-                      <Button
-                        variant="outline"
-                        size="sm"
+                      <DropdownMenuItem
                         onClick={() => onDownload(file)}
+                        className="gap-2"
                       >
                         <Download className="size-4" />
-                      </Button>
+                        Download
+                      </DropdownMenuItem>
                     )}
                     {canShareFile && (
-                      <Button
-                        variant="outline"
-                        size="sm"
+                      <DropdownMenuItem
                         onClick={() => onShare(file.id)}
+                        className="gap-2"
                       >
                         <Share2 className="size-4" />
-                      </Button>
+                        Share
+                      </DropdownMenuItem>
                     )}
                     {canDeleteFile && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
+                      <DropdownMenuItem
                         onClick={() => onDelete(file.id)}
+                        className="gap-2 text-destructive focus:text-destructive"
                       >
                         <Trash2 className="size-4" />
-                      </Button>
+                        Delete
+                      </DropdownMenuItem>
                     )}
-                  </>
-                )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           );
