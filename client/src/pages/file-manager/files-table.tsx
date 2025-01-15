@@ -1,4 +1,4 @@
-import { Download, Share, Share2, Trash2 } from 'lucide-react';
+import { Download, Share2, Trash2 } from 'lucide-react';
 import React from 'react';
 import {
   Button,

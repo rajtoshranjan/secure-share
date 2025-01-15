@@ -16,7 +16,7 @@ export const MFASetup: React.FC<MFASetupProps> = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           {!isMfaActive && (
             <DialogTitle>Setup two-factor authentication</DialogTitle>
