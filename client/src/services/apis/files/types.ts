@@ -7,6 +7,13 @@ export type FileDataFromServer = {
   modified_at: string;
 };
 
+export type SharedFileDataFromServer = {
+  shared_by_name: string;
+  shared_by_email: string;
+  can_download: boolean;
+  file: FileDataFromServer;
+};
+
 export type FileShareDataFromServer = {
   id: string;
   file: string;
@@ -33,7 +40,14 @@ export type FileData = {
   modifiedAt: string;
 };
 
-export type FileShareData = {
+export type SharedFileData = {
+  sharedByName: string;
+  sharedByEmail: string;
+  canDownload: boolean;
+  file: FileData;
+};
+
+export type ShareFileResponseData = {
   id: string;
   file: string;
   user: string;

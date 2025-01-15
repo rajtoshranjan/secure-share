@@ -8,14 +8,14 @@ import {
   GenerateShareLinkPayload,
   ShareLinkResponse,
   ShareWithUserPayload,
-  FileShareData,
+  ShareFileResponseData,
   FileShareDataFromServer,
 } from './types';
 
 // API Functions
 export const shareWithUserRequest = async (
   payload: ShareWithUserPayload,
-): Promise<ApiResponse<FileShareData>> => {
+): Promise<ApiResponse<ShareFileResponseData>> => {
   const response = await api.post<
     FileShareDataFromServer,
     ApiResponse<FileShareDataFromServer>
@@ -23,7 +23,7 @@ export const shareWithUserRequest = async (
 
   return {
     ...response,
-    data: apiDataResponseMapper<FileShareDataFromServer, FileShareData>(
+    data: apiDataResponseMapper<FileShareDataFromServer, ShareFileResponseData>(
       response.data,
     ),
   };

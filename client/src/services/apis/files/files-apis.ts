@@ -2,7 +2,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { ApiResponse } from '../types';
 import api from '../setup';
 import { apiDataResponseMapper } from '../utils';
-import { FileData, FileDataFromServer, UploadFilePayload } from './types';
+import {
+  FileData,
+  FileDataFromServer,
+  SharedFileData,
+  SharedFileDataFromServer,
+  UploadFilePayload,
+} from './types';
 
 // API Functions
 export const getFilesRequest = async (): Promise<ApiResponse<FileData[]>> => {
@@ -15,6 +21,21 @@ export const getFilesRequest = async (): Promise<ApiResponse<FileData[]>> => {
     ...response,
     data: response.data.map((file) =>
       apiDataResponseMapper<FileDataFromServer, FileData>(file),
+    ),
+  };
+};
+export const getSharedFilesRequest = async (): Promise<
+  ApiResponse<SharedFileData[]>
+> => {
+  const response = await api.get<
+    SharedFileDataFromServer[],
+    ApiResponse<SharedFileDataFromServer[]>
+  >('/files/shared/');
+
+  return {
+    ...response,
+    data: response.data.map((file) =>
+      apiDataResponseMapper<SharedFileDataFromServer, SharedFileData>(file),
     ),
   };
 };
@@ -53,10 +74,18 @@ export const downloadFileRequest = async (fileId: string): Promise<Blob> => {
 };
 
 // Hooks
-export const useGetFiles = () =>
+export const useGetFiles = (enabled: boolean = true) =>
   useQuery({
     queryKey: ['files'],
     queryFn: getFilesRequest,
+    enabled,
+  });
+
+export const useGetSharedFiles = (enabled: boolean = true) =>
+  useQuery({
+    queryKey: ['shared-files'],
+    queryFn: getSharedFilesRequest,
+    enabled,
   });
 
 export const useUploadFile = () =>

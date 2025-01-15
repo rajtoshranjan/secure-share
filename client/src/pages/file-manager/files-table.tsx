@@ -13,11 +13,17 @@ import {
 import { FileData } from '../../services/apis';
 import { formatBytes, formatDate, StringFormatter } from '../../lib/utils';
 
+type FileTableData = FileData & {
+  canDownload?: boolean;
+  canShare?: boolean;
+  canDelete?: boolean;
+};
+
 type FileTableProps = {
-  files: FileData[];
+  files: FileTableData[];
   onShare?: (id: string) => void;
   onDelete?: (id: string) => void;
-  onDownload?: (id: string) => void;
+  onDownload?: (file: FileData) => void;
   isLoading?: boolean;
 };
 
@@ -61,16 +67,16 @@ export const FileTable: React.FC<FileTableProps> = ({
             </TableCell>
             <TableCell>{formatDate(file.createdAt)}</TableCell>
             <TableCell className="flex justify-end space-x-2">
-              {onDownload && (
+              {onDownload && file.canDownload !== false && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onDownload(file.id)}
+                  onClick={() => onDownload(file)}
                 >
                   <Download className="size-4" />
                 </Button>
               )}
-              {onShare && (
+              {onShare && file.canShare !== false && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -79,7 +85,7 @@ export const FileTable: React.FC<FileTableProps> = ({
                   <Share2 className="size-4" />
                 </Button>
               )}
-              {onDelete && (
+              {onDelete && file.canDelete !== false && (
                 <Button
                   variant="destructive"
                   size="sm"

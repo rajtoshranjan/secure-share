@@ -18,6 +18,19 @@ class FileSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
 
+class SharedFileSerializer(serializers.Serializer):
+    shared_by_name = serializers.CharField(
+        source='file.owner.name',
+        read_only=True
+    )
+    shared_by_email = serializers.CharField(
+        source='file.owner.email',
+        read_only=True
+    )
+    can_download = serializers.BooleanField(read_only=True)
+    file = FileSerializer(read_only=True)
+
+
 class FileShareSerializer(serializers.ModelSerializer):
     file_name = serializers.CharField(source='file.name', read_only=True)
     shared_with_name = serializers.CharField(

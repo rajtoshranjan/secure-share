@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui';
 import { toast } from '../../hooks/use-toast';
 import {
+  FileData,
   handleResponseErrorMessage,
   useDeleteFile,
   useDownloadFile,
   useGetFiles,
+  useGetSharedFiles,
 } from '../../services/apis';
 import { FileShareDialog } from './file-share-dialog';
 import { FileUpload } from './file-upload';
@@ -21,10 +23,23 @@ export function FileManagementPage() {
     data: filesResponse,
     isLoading: isLoadingFiles,
     refetch: refetchFiles,
-  } = useGetFiles();
+  } = useGetFiles(true);
+
+  const {
+    data: sharedFilesResponse,
+    isLoading: isLoadingSharedFiles,
+    refetch: refetchSharedFiles,
+  } = useGetSharedFiles(false);
 
   const { mutate: deleteFile } = useDeleteFile();
   const { mutate: downloadFile } = useDownloadFile();
+
+  // Constants
+  const sharedFiles =
+    sharedFilesResponse?.data.map(({ file, canDownload }) => ({
+      ...file,
+      canDownload,
+    })) || [];
 
   // Handlers.
   const handleShare = (id: string) => {
@@ -32,16 +47,16 @@ export function FileManagementPage() {
     setIsShareModalOpen(true);
   };
 
-  const handleDownload = (id: string) => {
-    downloadFile(id, {
+  const handleDownload = (file: FileData) => {
+    downloadFile(file.id, {
       onSuccess: (fileBlob: Blob) => {
         // FIXME: This is a temporary solution to download the file.
         const url = window.URL.createObjectURL(fileBlob);
         // Create temporary link element
         const link = document.createElement('a');
         link.href = url;
-        link.download =
-          filesResponse?.data.find((file) => file.id === id)?.name || 'file';
+        link.download = file.name;
+
         // Trigger download
         document.body.appendChild(link);
         link.click();
@@ -73,6 +88,12 @@ export function FileManagementPage() {
     });
   };
 
+  const handleTabChange = (value: string) => {
+    if (value === 'shared') {
+      refetchSharedFiles();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -80,7 +101,11 @@ export function FileManagementPage() {
         <FileUpload onFileUploadSuccess={refetchFiles} />
       </div>
 
-      <Tabs defaultValue="personal" className="w-full">
+      <Tabs
+        defaultValue="personal"
+        className="w-full"
+        onValueChange={handleTabChange}
+      >
         <TabsList>
           <TabsTrigger value="personal">My Files</TabsTrigger>
           <TabsTrigger value="shared">Shared Files</TabsTrigger>
@@ -95,7 +120,11 @@ export function FileManagementPage() {
           />
         </TabsContent>
         <TabsContent value="shared">
-          <FileTable files={[]} />
+          <FileTable
+            files={sharedFiles}
+            onDownload={handleDownload}
+            isLoading={isLoadingSharedFiles}
+          />
         </TabsContent>
       </Tabs>
 

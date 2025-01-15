@@ -7,8 +7,9 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from .models import File, FileShare, FileShareLink
+from .permissions import HasDownloadFilePermission
 from .serializers import (FileSerializer, FileShareLinkSerializer,
-                          FileShareSerializer)
+                          FileShareSerializer, SharedFileSerializer)
 
 
 class FileViewSet(ModelViewSet):
@@ -22,9 +23,15 @@ class FileViewSet(ModelViewSet):
         file = serializer.save(owner=self.request.user)
         file.encrypt_file()
 
-    @action(detail=True, methods=['get'])
+    @action(
+        detail=True,
+        methods=['get'],
+        permission_classes=[HasDownloadFilePermission]
+    )
     def download(self, request, pk=None):
-        file = self.get_object()
+        file = get_object_or_404(File, id=pk)
+        self.check_object_permissions(request, file)
+
         decrypted_file = file.get_decrypted_file()
 
         response = FileResponse(
@@ -36,10 +43,15 @@ class FileViewSet(ModelViewSet):
         response['Content-Disposition'] = f'attachment; filename="{file.name}"'
         return response
 
-    @action(detail=False, methods=['get'])
+    @action(
+        detail=False,
+        methods=['get'],
+        serializer_class=SharedFileSerializer,
+        permission_classes=[IsAuthenticated]
+    )
     def shared(self, request):
-        files = File.objects.filter(shares__user=request.user)
-        serializer = self.get_serializer(files, many=True)
+        shares = FileShare.objects.filter(user=request.user).select_related('file')
+        serializer = self.get_serializer(shares, many=True)
         return Response(serializer.data)
 
 
