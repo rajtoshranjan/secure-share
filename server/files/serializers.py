@@ -5,7 +5,6 @@ from .models import File, FileShare, FileShareLink
 
 
 class FileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = File
         fields = ['id', 'name', "size", 'file', 'created_at', 'modified_at']
@@ -21,8 +20,14 @@ class FileSerializer(serializers.ModelSerializer):
 
 class FileShareSerializer(serializers.ModelSerializer):
     file_name = serializers.CharField(source='file.name', read_only=True)
-    shared_with_name = serializers.CharField(source='user.name', read_only=True)
-    shared_with_email = serializers.CharField(source='user.email', read_only=True)
+    shared_with_name = serializers.CharField(
+        source='user.name',
+        read_only=True
+    )
+    shared_with_email = serializers.CharField(
+        source='user.email',
+        read_only=True
+    )
     email = serializers.EmailField(write_only=True)
 
     class Meta:
@@ -41,7 +46,7 @@ class FileShareSerializer(serializers.ModelSerializer):
         validated_data = super().validate(attrs)
 
         validation_errors = {}
-        
+
         email = validated_data.get('email')
         try:
             user = User.objects.get(email=email)
@@ -50,20 +55,20 @@ class FileShareSerializer(serializers.ModelSerializer):
                 validation_errors['email'] = (
                     "You cannot share a file with yourself"
                 )
-            
+
             # Check if file is already shared with user
             file = attrs.get('file')
             if FileShare.objects.filter(file=file, user=user).exists():
                 validation_errors['email'] = (
                     "This file is already shared with this user"
                 )
-                
+
         except User.DoesNotExist:
             validation_errors['email'] = "User with this email does not exist"
-            
+
         if validation_errors:
             raise serializers.ValidationError(validation_errors)
-        
+
         return validated_data
 
     def create(self, validated_data):

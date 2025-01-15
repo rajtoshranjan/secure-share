@@ -5,8 +5,8 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
-from rest_framework.exceptions import ValidationError
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 from secure_share.models import BaseModel
 
 from .managers import FileShareLinkManager
@@ -52,36 +52,36 @@ class File(BaseModel):
             # Generate a key for encryption
             key = Fernet.generate_key()
             fernet = Fernet(key)
-            
+
             # Read original file content in binary mode
             self.file.seek(0)
             file_content = self.file.read()
-            
+
             # Encrypt the content
             encrypted_content = fernet.encrypt(file_content)
-            
+
             # Create a new file with encrypted content
             encrypted_name = f"{self.name}.encrypted"
             encrypted_file = ContentFile(encrypted_content)
-            
+
             # Save the encrypted file
             self.file.delete(save=False)  # Delete old file
             self.file.save(encrypted_name, encrypted_file, save=False)
-            
+
             # Store the encryption key
             self.encryption_key = key
             self.save()
-            
+
         except Exception as e:
             raise ValueError(f"Encryption failed: {str(e)}")
 
     def get_decrypted_content(self):
         """
         Decrypts and returns the file content.
-        
+
         Returns:
             bytes: Decrypted file content
-            
+
         Raises:
             ValueError: If file is not encrypted or decryption fails
         """
@@ -91,17 +91,17 @@ class File(BaseModel):
         try:
             # Initialize Fernet with the stored key
             fernet = Fernet(self.encryption_key)
-            
+
             # Read encrypted content in binary mode
             self.file.seek(0)
             encrypted_content = self.file.read()
-            
+
             # Decrypt the content
             decrypted_content = fernet.decrypt(encrypted_content)
-            
+
             # Return the decrypted content as bytes
             return bytes(decrypted_content)
-            
+
         except Exception as e:
             raise ValueError(f"Decryption failed: {str(e)}")
 
@@ -147,7 +147,9 @@ class FileShareLink(BaseModel):
     def clean(self):
         # Validate that expires_at is not in the past
         if self.expires_at < timezone.now():
-            raise ValidationError({'expires_at': 'Expiry date cannot be in the past'})
+            raise ValidationError(
+                {'expires_at': 'Expiry date cannot be in the past'}
+            )
 
     def save(self, *args, **kwargs):
         self.clean()

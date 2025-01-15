@@ -26,7 +26,7 @@ class FileViewSet(ModelViewSet):
     def download(self, request, pk=None):
         file = self.get_object()
         decrypted_file = file.get_decrypted_file()
-        
+
         response = FileResponse(
             decrypted_file,
             as_attachment=True,
@@ -35,7 +35,6 @@ class FileViewSet(ModelViewSet):
         response['Content-Type'] = 'application/octet-stream'
         response['Content-Disposition'] = f'attachment; filename="{file.name}"'
         return response
-
 
     @action(detail=False, methods=['get'])
     def shared(self, request):
@@ -64,7 +63,10 @@ class FileShareLinkViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return FileShareLink.objects.filter(file__owner=self.request.user, expires_at__gte=timezone.now())
+        return FileShareLink.objects.filter(
+            file__owner=self.request.user,
+            expires_at__gte=timezone.now()
+        )
 
     def perform_create(self, serializer):
         # Ensure user owns the file being shared.
@@ -76,15 +78,14 @@ class FileShareLinkViewSet(ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[AllowAny])
     def download(self, request, pk=None):
         share_link = get_object_or_404(FileShareLink, slug=pk)
-        
+
         # Check if link has expired.
         if share_link.is_expired:
             return render(request, 'link_expired.html')
 
-        
         file = share_link.file
         decrypted_file = file.get_decrypted_file()
-        
+
         response = FileResponse(
             decrypted_file,
             as_attachment=True,
@@ -92,7 +93,5 @@ class FileShareLinkViewSet(ModelViewSet):
         )
         response['Content-Type'] = 'application/octet-stream'
         response['Content-Disposition'] = f'attachment; filename="{file.name}"'
-        
-        return response
-        
 
+        return response
