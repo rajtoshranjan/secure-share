@@ -8,9 +8,9 @@ class HasDownloadFilePermission(IsAuthenticated):
         if file.owner == request.user:
             return True
 
-        shared_file = file.shares.filter(user=request.user)
+        file_permissions = file.user_permissions.filter(user=request.user)
 
-        if shared_file.exists() and shared_file.first().can_download:
+        if file_permissions.exists() and file_permissions.first().can_download:
             return True
 
         return False

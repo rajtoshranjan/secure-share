@@ -1,37 +1,10 @@
 from accounts.models import User
 from rest_framework import serializers
 
-from .models import File, FileShare, FileShareLink
+from ..models import FilePermission
 
 
-class FileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = File
-        fields = ['id', 'name', "size", 'file', 'created_at', 'modified_at']
-        read_only_fields = ['id', 'created_at', 'modified_at', 'size', 'name']
-        write_only_fields = ['file']
-
-    def validate(self, attrs):
-        file = attrs.get('file')
-        if file:
-            attrs['name'] = file.name
-        return super().validate(attrs)
-
-
-class SharedFileSerializer(serializers.Serializer):
-    shared_by_name = serializers.CharField(
-        source='file.owner.name',
-        read_only=True
-    )
-    shared_by_email = serializers.CharField(
-        source='file.owner.email',
-        read_only=True
-    )
-    can_download = serializers.BooleanField(read_only=True)
-    file = FileSerializer(read_only=True)
-
-
-class FileShareSerializer(serializers.ModelSerializer):
+class FilePermissionSerializer(serializers.ModelSerializer):
     file_name = serializers.CharField(source='file.name', read_only=True)
     shared_with_name = serializers.CharField(
         source='user.name',
@@ -44,7 +17,7 @@ class FileShareSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True)
 
     class Meta:
-        model = FileShare
+        model = FilePermission
         fields = [
             'id',
             'file',
@@ -71,7 +44,7 @@ class FileShareSerializer(serializers.ModelSerializer):
 
             # Check if file is already shared with user
             file = attrs.get('file')
-            if FileShare.objects.filter(file=file, user=user).exists():
+            if FilePermission.objects.filter(file=file, user=user).exists():
                 validation_errors['email'] = (
                     "This file is already shared with this user"
                 )
@@ -86,11 +59,5 @@ class FileShareSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('email')
-        return FileShare.objects.create(**validated_data)
+        return FilePermission.objects.create(**validated_data)
 
-
-class FileShareLinkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FileShareLink
-        fields = ['id', 'file', 'slug', 'expires_at']
-        read_only_fields = ['slug', 'id']

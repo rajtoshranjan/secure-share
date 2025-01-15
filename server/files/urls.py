@@ -1,9 +1,9 @@
 from rest_framework.routers import DefaultRouter
 
-from .views import FileShareLinkViewSet, FileShareViewSet, FileViewSet
+from .views import FilePermissionViewSet, FileShareLinkViewSet, FileViewSet
 
 router = DefaultRouter()
-router.register('shares', FileShareViewSet, basename='file-share')
+router.register('shares', FilePermissionViewSet, basename='file-share')
 router.register('links', FileShareLinkViewSet, basename='file-share-link')
 router.register('', FileViewSet, basename='file')
 
