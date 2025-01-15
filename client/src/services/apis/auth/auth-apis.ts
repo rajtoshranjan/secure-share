@@ -93,8 +93,12 @@ export const deactivateMFARequest = async (payload: {
   });
 };
 
-export const getUsersRequest = async (): Promise<ApiResponse<UserInfo[]>> => {
-  return await api.get<UserInfo[], ApiResponse<UserInfo[]>>('/accounts/');
+export const logoutRequest = async (payload: {
+  refreshToken: string;
+}): Promise<ApiResponse> => {
+  return await api.post<any, ApiResponse>('/accounts/logout/', {
+    refresh_token: payload.refreshToken,
+  });
 };
 
 // Hooks.
@@ -134,8 +138,7 @@ export const useDeactivateMFA = () =>
     mutationFn: deactivateMFARequest,
   });
 
-export const useGetUsers = () =>
-  useQuery({
-    queryKey: ['users'],
-    queryFn: getUsersRequest,
+export const useLogout = () =>
+  useMutation({
+    mutationFn: logoutRequest,
   });

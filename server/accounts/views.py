@@ -1,5 +1,11 @@
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 from .permissions import IsSelf
@@ -19,3 +25,20 @@ class UserViewSet(ModelViewSet):
 
     def get_queryset(self):
         return User.objects.all()
+
+    @action(detail=False,  methods=["post"])
+    def logout(self, request):
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+
+            user_from_token = JWTTokenUserAuthentication().get_user(token)
+
+            user = get_object_or_404(User, id=user_from_token.id)
+            self.check_object_permissions(self.request, user)
+
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            response = {"message": str(e)}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)

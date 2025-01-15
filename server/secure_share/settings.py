@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import logging
 import os
 import string
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
+    'rest_framework_simplejwt.token_blacklist',
     "trench",
     # Apps.
     "accounts",
@@ -252,3 +255,7 @@ LOGGING = {
 # Add these settings for better error reporting
 APPEND_SLASH = True
 DEBUG_PROPAGATE_EXCEPTIONS = True
+
+# Disable logging for tests.
+if len(sys.argv) > 1 and sys.argv[1] == "test":
+    logging.disable(logging.CRITICAL)

@@ -1,6 +1,8 @@
 import { User } from 'lucide-react';
 import { useState } from 'react';
 import { logout } from '../services/apis/helpers';
+import { useLogout } from '../services/apis/auth';
+import { tokenManager } from '../lib/utils';
 import { MFASetup } from './mfa';
 import {
   Button,
@@ -12,10 +14,32 @@ import {
 } from './ui';
 
 export function UserNav() {
+  // States.
   const [showMFASetup, setShowMFASetup] = useState(false);
 
+  // Hooks.
+  const { mutate: sendLogoutRequest } = useLogout();
+
+  // Handlers.
   const handleLogout = () => {
-    logout();
+    const refreshToken = tokenManager.getRefreshToken();
+    if (refreshToken) {
+      sendLogoutRequest(
+        {
+          refreshToken,
+        },
+        {
+          onSuccess: () => {
+            logout();
+          },
+          onError: () => {
+            logout();
+          },
+        },
+      );
+    } else {
+      logout();
+    }
   };
 
   return (
