@@ -1,15 +1,12 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { StringFormatter } from '../../../lib/utils';
 import api from '../setup';
 import { ApiResponse } from '../types';
-import { apiDataResponseMapper } from '../utils';
+import { apiDataResponseMapper, apiPayloadMapper } from '../utils';
 import {
-  FileShareLinkDataFromServer,
-  GenerateShareLinkPayload,
-  ShareLinkResponse,
-  ShareWithUserPayload,
-  ShareFileResponseData,
   FileShareDataFromServer,
+  ShareFileResponseData,
+  ShareWithUserPayload,
 } from './types';
 
 // API Functions
@@ -29,19 +26,43 @@ export const shareWithUserRequest = async (
   };
 };
 
-export const generateShareLinkRequest = async (
-  payload: GenerateShareLinkPayload,
-): Promise<ApiResponse<ShareLinkResponse>> => {
-  const response = await api.post<
-    FileShareLinkDataFromServer,
-    ApiResponse<FileShareLinkDataFromServer>
-  >('/files/links/', StringFormatter.convertKeysCamelCaseToSnakeCase(payload));
+export const updateSharePermissionRequest = async (payload: {
+  canDownload: boolean;
+  id: string;
+}): Promise<ApiResponse<ShareFileResponseData>> => {
+  const response = await api.patch<
+    FileShareDataFromServer,
+    ApiResponse<FileShareDataFromServer>
+  >(
+    `/files/shares/${payload.id}/update-permission/`,
+    apiPayloadMapper(payload),
+  );
 
   return {
     ...response,
-    data: apiDataResponseMapper<FileShareLinkDataFromServer, ShareLinkResponse>(
+    data: apiDataResponseMapper<FileShareDataFromServer, ShareFileResponseData>(
       response.data,
     ),
+  };
+};
+
+export const revokeFileShareRequest = async (payload: { id: string }) =>
+  await api.delete(`/files/shares/${payload.id}/`);
+
+export const getFileSharesRequest = async (
+  fileId: string,
+): Promise<ApiResponse<ShareFileResponseData[]>> => {
+  const response = await api.get<
+    FileShareDataFromServer[],
+    ApiResponse<FileShareDataFromServer[]>
+  >(`/files/shares/?file=${fileId}`);
+
+  return {
+    ...response,
+    data: apiDataResponseMapper<
+      FileShareDataFromServer[],
+      ShareFileResponseData[]
+    >(response.data),
   };
 };
 
@@ -51,7 +72,18 @@ export const useShareWithUser = () =>
     mutationFn: shareWithUserRequest,
   });
 
-export const useGenerateShareLink = () =>
+export const useUpdateSharePermission = () =>
   useMutation({
-    mutationFn: generateShareLinkRequest,
+    mutationFn: updateSharePermissionRequest,
+  });
+
+export const useRevokeFileShare = () =>
+  useMutation({
+    mutationFn: revokeFileShareRequest,
+  });
+
+export const useFileShares = (fileId: string) =>
+  useQuery({
+    queryKey: ['file-shares', fileId],
+    queryFn: () => getFileSharesRequest(fileId),
   });

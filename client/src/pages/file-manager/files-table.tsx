@@ -35,6 +35,7 @@ type FileTableProps = {
   onShare?: (id: string) => void;
   onDelete?: (id: string) => void;
   onDownload?: (file: FileData) => void;
+  onManagePermissions?: (id: string) => void;
   isLoading?: boolean;
 };
 
@@ -43,6 +44,7 @@ export const FileTable: React.FC<FileTableProps> = ({
   onShare,
   onDelete,
   onDownload,
+  onManagePermissions,
   isLoading,
 }) => (
   <Table>
@@ -74,6 +76,8 @@ export const FileTable: React.FC<FileTableProps> = ({
           const canDeleteFile = onDelete && file.canDelete !== false;
           const hasNoActions =
             !canDownloadFile && !canShareFile && !canDeleteFile;
+          const canManagePermissions =
+            onManagePermissions && file.canShare !== false;
 
           return (
             <TableRow key={file.id}>
@@ -114,6 +118,15 @@ export const FileTable: React.FC<FileTableProps> = ({
                       >
                         <Share2 className="size-4" />
                         Share
+                      </DropdownMenuItem>
+                    )}
+                    {canManagePermissions && (
+                      <DropdownMenuItem
+                        onClick={() => onManagePermissions(file.id)}
+                        className="gap-2"
+                      >
+                        <Info className="size-4" />
+                        Manage Access
                       </DropdownMenuItem>
                     )}
                     {canDeleteFile && (

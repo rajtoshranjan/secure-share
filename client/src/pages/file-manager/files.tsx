@@ -12,11 +12,13 @@ import {
 import { FileShareDialog } from './file-share-dialog';
 import { FileUpload } from './file-upload';
 import { FileTable } from './files-table';
+import { FilePermissionsDialog } from './file-permissions-dialog';
 
 export function FileManagementPage() {
   // States.
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeFileId, setActiveFileId] = useState<string | null>(null);
+  const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
 
   // Queries.
   const {
@@ -94,6 +96,11 @@ export function FileManagementPage() {
     }
   };
 
+  const handleManagePermissions = (id: string) => {
+    setActiveFileId(id);
+    setIsPermissionsModalOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -116,6 +123,7 @@ export function FileManagementPage() {
             onShare={handleShare}
             onDelete={handleDelete}
             onDownload={handleDownload}
+            onManagePermissions={handleManagePermissions}
             isLoading={isLoadingFiles}
           />
         </TabsContent>
@@ -132,6 +140,11 @@ export function FileManagementPage() {
       <FileShareDialog
         open={isShareModalOpen}
         onOpenChange={setIsShareModalOpen}
+        fileId={activeFileId ?? ''}
+      />
+      <FilePermissionsDialog
+        open={isPermissionsModalOpen}
+        onOpenChange={setIsPermissionsModalOpen}
         fileId={activeFileId ?? ''}
       />
     </div>

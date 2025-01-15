@@ -5,6 +5,7 @@ djangorestframework-simplejwt==5.4.0
 sqlparse==0.5.3
 uvicorn[standard]==0.27.1
 uuid==1.30
+django-filter==24.3
 
 # Authentication & Security
 PyJWT==2.10.1
