@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { ApiResponse } from '../types';
 
 import api from '../setup';
+import { StringFormatter } from '../../../lib/utils';
 import {
   ActivateMFAData,
   LoginRequestPayload,
@@ -12,6 +13,8 @@ import {
   MFAMethodInfo,
   MFAMethodInfoFromServer,
   LoginMFAverifyResponse,
+  UpdateProfilePayload,
+  ChangePasswordPayload,
 } from './types';
 
 // APIs.
@@ -101,6 +104,27 @@ export const logoutRequest = async (payload: {
   });
 };
 
+export const getUserInfoRequest = async (): Promise<ApiResponse<UserInfo>> => {
+  return await api.get<UserInfo, ApiResponse<UserInfo>>('/accounts/me/');
+};
+
+export const updateProfileRequest = async (
+  payload: UpdateProfilePayload,
+): Promise<ApiResponse<UserInfo>> => {
+  return await api.patch<UserInfo, ApiResponse<UserInfo>>(
+    '/accounts/me/',
+    StringFormatter.convertKeysCamelCaseToSnakeCase(payload),
+  );
+};
+export const changePasswordRequest = async (
+  payload: ChangePasswordPayload,
+): Promise<ApiResponse<void>> => {
+  return await api.post(
+    '/accounts/change-password/',
+    StringFormatter.convertKeysCamelCaseToSnakeCase(payload),
+  );
+};
+
 // Hooks.
 export const useLogin = () =>
   useMutation({
@@ -141,4 +165,20 @@ export const useDeactivateMFA = () =>
 export const useLogout = () =>
   useMutation({
     mutationFn: logoutRequest,
+  });
+
+export const useGetUserInfo = () =>
+  useQuery({
+    queryKey: ['userInfo'],
+    queryFn: getUserInfoRequest,
+  });
+
+export const useUpdateProfile = () =>
+  useMutation({
+    mutationFn: updateProfileRequest,
+  });
+
+export const useChangePassword = () =>
+  useMutation({
+    mutationFn: changePasswordRequest,
   });

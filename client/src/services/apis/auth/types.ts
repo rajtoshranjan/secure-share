@@ -41,3 +41,12 @@ export type MFAMethodInfo = {
   name: MFAMethod;
   isPrimary: boolean;
 };
+
+export type UpdateProfilePayload = {
+  name: string;
+};
+
+export type ChangePasswordPayload = {
+  currentPassword: string;
+  newPassword: string;
+};

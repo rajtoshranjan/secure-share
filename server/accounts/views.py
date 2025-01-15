@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 from .permissions import IsSelf
-from .serializers import UserSerializer
+from .serializers import ChangePasswordSerializer, UserSerializer
 
 
 class UserViewSet(ModelViewSet):
@@ -25,6 +25,37 @@ class UserViewSet(ModelViewSet):
 
     def get_queryset(self):
         return User.objects.all()
+
+    @action(detail=False,  methods=["get", 'patch'])
+    def me(self, request):
+        if request.method == 'GET':
+            serializer = self.serializer_class(request.user)
+            response = {
+                "message": "Profile fetched successfully.",
+                "data": serializer.data,
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        elif request.method == 'PATCH':
+            serializer = self.serializer_class(request.user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            response = {
+                "message": "Profile updated successfully.",
+                "data": serializer.data,
+            }
+            return Response(response, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["post"], url_path="change-password")
+    def change_password(self, request):
+        serializer = ChangePasswordSerializer(request.user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        response = {
+            "message": "Password changed successfully.",
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
 
     @action(detail=False,  methods=["post"])
     def logout(self, request):
@@ -42,3 +73,4 @@ class UserViewSet(ModelViewSet):
         except Exception as e:
             response = {"message": str(e)}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
+

@@ -12,10 +12,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui';
+import { ProfileDialog } from './profile';
 
 export function UserNav() {
   // States.
   const [showMFASetup, setShowMFASetup] = useState(false);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
 
   // Hooks.
   const { mutate: sendLogoutRequest } = useLogout();
@@ -50,11 +52,9 @@ export function UserNav() {
             <User className="size-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end">
-          <DropdownMenuItem asChild>
-            <button className="w-full" onClick={() => {}}>
-              Profile
-            </button>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuItem onClick={() => setShowProfileDialog(true)}>
+            Profile
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <button className="w-full" onClick={() => setShowMFASetup(true)}>
@@ -71,6 +71,10 @@ export function UserNav() {
       </DropdownMenu>
 
       <MFASetup open={showMFASetup} onOpenChange={setShowMFASetup} />
+      <ProfileDialog
+        open={showProfileDialog}
+        onOpenChange={setShowProfileDialog}
+      />
     </>
   );
 }
