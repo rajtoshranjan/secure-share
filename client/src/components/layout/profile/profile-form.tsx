@@ -2,10 +2,10 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button, Input, Label } from '../ui';
-import { useGetUserInfo, useUpdateProfile } from '../../services/apis/auth';
-import { toast } from '../../hooks';
-import { handleResponseErrorMessage } from '../../services/apis';
+import { Button, Input, Label } from '../../ui';
+import { useGetUserInfo, useUpdateProfile } from '../../../services/apis/auth';
+import { toast } from '../../../hooks';
+import { handleResponseErrorMessage } from '../../../services/apis';
 
 const profileFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),

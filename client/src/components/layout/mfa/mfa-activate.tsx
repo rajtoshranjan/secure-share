@@ -8,8 +8,8 @@ import {
   handleResponseErrorMessage,
   useActivateMFA,
   useConfirmMFA,
-} from '../../services/apis';
-import { Button, Input, Label } from '../ui';
+} from '../../../services/apis';
+import { Button, Input, Label } from '../../ui';
 
 type MFAActivateProps = {
   onActivationSuccess: () => void;

@@ -9,7 +9,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '../ui';
+} from '../../ui';
 import { ProfileForm } from './profile-form';
 import { PasswordChangeForm } from './password-change-form';
 

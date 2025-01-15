@@ -2,10 +2,10 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button, Input, Label } from '../ui';
-import { useChangePassword } from '../../services/apis/auth';
-import { toast } from '../../hooks';
-import { handleResponseErrorMessage } from '../../services/apis';
+import { Button, Input, Label } from '../../ui';
+import { useChangePassword } from '../../../services/apis/auth';
+import { toast } from '../../../hooks';
+import { handleResponseErrorMessage } from '../../../services/apis';
 
 const passwordChangeFormSchema = z
   .object({

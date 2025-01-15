@@ -1,10 +1,10 @@
 import { Moon, Sun } from 'lucide-react';
 import { Link, Outlet } from 'react-router-dom';
-import { Theme } from '../hooks';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { toggleTheme } from '../store/slices/theme-slice';
-import { CustomIcons } from './icons';
-import { Button } from './ui/button';
+import { Theme } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { toggleTheme } from '../../store/slices/theme-slice';
+import { CustomIcons } from '../icons';
+import { Button } from '../ui/button';
 import { UserNav } from './user-nav';
 
 export function Layout() {

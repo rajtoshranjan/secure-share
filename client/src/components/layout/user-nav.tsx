@@ -1,9 +1,8 @@
 import { User } from 'lucide-react';
 import { useState } from 'react';
-import { logout } from '../services/apis/helpers';
-import { useLogout } from '../services/apis/auth';
-import { tokenManager } from '../lib/utils';
-import { MFASetup } from './mfa';
+import { logout } from '../../services/apis/helpers';
+import { useLogout } from '../../services/apis/auth';
+import { tokenManager } from '../../lib/utils';
 import {
   Button,
   DropdownMenu,
@@ -11,7 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui';
+} from '../ui';
+import { MFASetup } from './mfa';
 import { ProfileDialog } from './profile';
 
 export function UserNav() {

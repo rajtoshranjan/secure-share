@@ -6,7 +6,7 @@ import { CheckCircle2 } from 'lucide-react';
 import {
   handleResponseErrorMessage,
   useDeactivateMFA,
-} from '../../services/apis';
+} from '../../../services/apis';
 import {
   Accordion,
   AccordionContent,
@@ -18,7 +18,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '../ui';
+} from '../../ui';
 
 type MFADeactivateProps = {
   onDeactivationSuccess: () => void;

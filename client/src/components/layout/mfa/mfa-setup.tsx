@@ -1,6 +1,6 @@
 import React from 'react';
-import { useGetActiveMFAMethods } from '../../services/apis';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui';
+import { useGetActiveMFAMethods } from '../../../services/apis';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui';
 import { MFAActivate } from './mfa-activate';
 import { MFADeactivate } from './mfa-deactivate';
 
