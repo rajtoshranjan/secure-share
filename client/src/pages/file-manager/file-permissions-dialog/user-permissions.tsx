@@ -15,9 +15,9 @@ import {
   TableRow,
 } from '../../../components/ui';
 import {
-  useFileShares,
-  useUpdateSharePermission,
-  useRevokeFileShare,
+  useFilePermissions,
+  useUpdateFilePermission,
+  useRevokeFilePermission,
   handleResponseErrorMessage,
 } from '../../../services/apis';
 import { toast } from '../../../hooks';
@@ -28,22 +28,25 @@ type UserPermissionsProps = {
 
 export const UserPermissions = ({ fileId }: UserPermissionsProps) => {
   const {
-    data: sharesResponse,
+    data: filePermissionsResponse,
     isLoading,
-    refetch: refetchShares,
-  } = useFileShares(fileId);
-  const { mutate: updateShare } = useUpdateSharePermission();
-  const { mutate: revokeShare } = useRevokeFileShare();
+    refetch: refetchFilePermissions,
+  } = useFilePermissions(fileId);
+  const { mutate: updateFilePermission } = useUpdateFilePermission();
+  const { mutate: revokeFilePermission } = useRevokeFilePermission();
 
-  const handlePermissionChange = (shareId: string, canDownload: boolean) => {
-    updateShare(
-      { id: shareId, canDownload },
+  const handlePermissionChange = (
+    permissionId: string,
+    canDownload: boolean,
+  ) => {
+    updateFilePermission(
+      { id: permissionId, canDownload },
       {
         onSuccess: () => {
           toast({
             title: 'Permission updated successfully',
           });
-          refetchShares();
+          refetchFilePermissions();
         },
         onError: (error) => {
           handleResponseErrorMessage(error);
@@ -52,15 +55,15 @@ export const UserPermissions = ({ fileId }: UserPermissionsProps) => {
     );
   };
 
-  const handleRevokeAccess = (shareId: string) => {
-    revokeShare(
-      { id: shareId },
+  const handleRevokeAccess = (permissionId: string) => {
+    revokeFilePermission(
+      { id: permissionId },
       {
         onSuccess: () => {
           toast({
             title: 'Access revoked successfully',
           });
-          refetchShares();
+          refetchFilePermissions();
         },
         onError: (error) => {
           handleResponseErrorMessage(error);
@@ -77,7 +80,8 @@ export const UserPermissions = ({ fileId }: UserPermissionsProps) => {
     );
   }
 
-  const hasShares = sharesResponse?.data && sharesResponse.data.length > 0;
+  const hasPermissions =
+    filePermissionsResponse?.data && filePermissionsResponse.data.length > 0;
 
   return (
     <div className="flex h-[300px] flex-col">
@@ -96,7 +100,7 @@ export const UserPermissions = ({ fileId }: UserPermissionsProps) => {
       <div className="flex-1 overflow-auto">
         <Table>
           <TableBody>
-            {!hasShares ? (
+            {!hasPermissions ? (
               <TableRow>
                 <TableCell colSpan={4} className="h-[200px]">
                   <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
@@ -106,19 +110,24 @@ export const UserPermissions = ({ fileId }: UserPermissionsProps) => {
                 </TableCell>
               </TableRow>
             ) : (
-              sharesResponse.data.map((share) => (
-                <TableRow key={share.id}>
+              filePermissionsResponse.data.map((permission) => (
+                <TableRow key={permission.id}>
                   <TableCell className="whitespace-nowrap">
-                    {share.sharedWithName}
+                    {permission.sharedWithName}
                   </TableCell>
                   <TableCell className="whitespace-nowrap">
-                    {share.sharedWithEmail}
+                    {permission.sharedWithEmail}
                   </TableCell>
                   <TableCell>
                     <Select
-                      defaultValue={share.canDownload ? 'download' : 'view'}
+                      defaultValue={
+                        permission.canDownload ? 'download' : 'view'
+                      }
                       onValueChange={(value) =>
-                        handlePermissionChange(share.id, value === 'download')
+                        handlePermissionChange(
+                          permission.id,
+                          value === 'download',
+                        )
                       }
                     >
                       <SelectTrigger>
@@ -134,7 +143,7 @@ export const UserPermissions = ({ fileId }: UserPermissionsProps) => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleRevokeAccess(share.id)}
+                      onClick={() => handleRevokeAccess(permission.id)}
                     >
                       <Trash2 className="size-4 text-destructive" />
                     </Button>

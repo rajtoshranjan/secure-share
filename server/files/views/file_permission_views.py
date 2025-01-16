@@ -24,18 +24,17 @@ class FilePermissionViewSet(ModelViewSet):
             raise PermissionError("You can only share files you own")
         serializer.save()
 
-    @action(detail=True, methods=['patch'], url_path='update-permission')
-    def update_permission(self, request, pk=None):
-        share = self.get_object()
+    def partial_update(self, request, pk=None):
+        file_permission = self.get_object()
         can_download = request.data.get('can_download', False)
 
-        if share.file.owner != request.user:
-            return Response(
-                {"detail": "You can only modify permissions for files you own"},
-                status=403
-            )
+        file_permission.can_download = can_download
+        file_permission.save()
 
-        share.can_download = can_download
-        share.save()
+        response = {
+            'data': self.get_serializer(file_permission).data,
+            "message": "File permission updated successfully"
+        }
 
-        return Response(self.get_serializer(share).data)
+        return Response(response)
+

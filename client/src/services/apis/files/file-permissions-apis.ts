@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { StringFormatter } from '../../../lib/utils';
 import api from '../setup';
 import { ApiResponse } from '../types';
 import { apiDataResponseMapper, apiPayloadMapper } from '../utils';
@@ -10,13 +9,13 @@ import {
 } from './types';
 
 // API Functions
-export const shareWithUserRequest = async (
+export const shareFileWithUserRequest = async (
   payload: ShareWithUserPayload,
 ): Promise<ApiResponse<ShareFileResponseData>> => {
   const response = await api.post<
     FileShareDataFromServer,
     ApiResponse<FileShareDataFromServer>
-  >('/files/shares/', StringFormatter.convertKeysCamelCaseToSnakeCase(payload));
+  >('/files/permissions/', apiPayloadMapper(payload));
 
   return {
     ...response,
@@ -26,17 +25,14 @@ export const shareWithUserRequest = async (
   };
 };
 
-export const updateSharePermissionRequest = async (payload: {
+export const updateFilePermissionRequest = async (payload: {
   canDownload: boolean;
   id: string;
 }): Promise<ApiResponse<ShareFileResponseData>> => {
   const response = await api.patch<
     FileShareDataFromServer,
     ApiResponse<FileShareDataFromServer>
-  >(
-    `/files/shares/${payload.id}/update-permission/`,
-    apiPayloadMapper(payload),
-  );
+  >(`/files/permissions/${payload.id}/`, apiPayloadMapper(payload));
 
   return {
     ...response,
@@ -46,16 +42,16 @@ export const updateSharePermissionRequest = async (payload: {
   };
 };
 
-export const revokeFileShareRequest = async (payload: { id: string }) =>
-  await api.delete(`/files/shares/${payload.id}/`);
+export const revokeFilePermissionRequest = async (payload: { id: string }) =>
+  await api.delete(`/files/permissions/${payload.id}/`);
 
-export const getFileSharesRequest = async (
+export const getFilePermissionsRequest = async (
   fileId: string,
 ): Promise<ApiResponse<ShareFileResponseData[]>> => {
   const response = await api.get<
     FileShareDataFromServer[],
     ApiResponse<FileShareDataFromServer[]>
-  >(`/files/shares/?file=${fileId}`);
+  >(`/files/permissions/?file=${fileId}`);
 
   return {
     ...response,
@@ -69,21 +65,21 @@ export const getFileSharesRequest = async (
 // Hooks
 export const useShareWithUser = () =>
   useMutation({
-    mutationFn: shareWithUserRequest,
+    mutationFn: shareFileWithUserRequest,
   });
 
-export const useUpdateSharePermission = () =>
+export const useUpdateFilePermission = () =>
   useMutation({
-    mutationFn: updateSharePermissionRequest,
+    mutationFn: updateFilePermissionRequest,
   });
 
-export const useRevokeFileShare = () =>
+export const useRevokeFilePermission = () =>
   useMutation({
-    mutationFn: revokeFileShareRequest,
+    mutationFn: revokeFilePermissionRequest,
   });
 
-export const useFileShares = (fileId: string) =>
+export const useFilePermissions = (fileId: string) =>
   useQuery({
-    queryKey: ['file-shares', fileId],
-    queryFn: () => getFileSharesRequest(fileId),
+    queryKey: ['file-permissions', fileId],
+    queryFn: () => getFilePermissionsRequest(fileId),
   });
