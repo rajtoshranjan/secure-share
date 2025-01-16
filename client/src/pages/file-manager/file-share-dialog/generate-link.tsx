@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Copy, Check, RefreshCw } from 'lucide-react';
+import { Copy, Check, RefreshCw, Info } from 'lucide-react';
 import { Button, Input, Label } from '../../../components/ui';
 import { useGenerateShareLink } from '../../../services/apis/files';
 import { toast } from '../../../hooks';
@@ -201,14 +201,22 @@ export const GenerateLink = ({ fileId }: GenerateLinkProps) => {
             </div>
           </div>
         ) : (
-          <Button
-            type="submit"
-            className="mt-4 w-full"
-            disabled={!watch('expiryDate') || !watch('expiryTime')}
-            loading={isPending}
-          >
-            Generate Link
-          </Button>
+          <>
+            <div className="flex items-center gap-1 pt-1 text-xs text-amber-500">
+              <Info className="size-3.5" />
+              <span>
+                Anyone with the link will be able to download this file
+              </span>
+            </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!watch('expiryDate') || !watch('expiryTime')}
+              loading={isPending}
+            >
+              Generate Public Link
+            </Button>
+          </>
         )}
       </div>
     </form>
