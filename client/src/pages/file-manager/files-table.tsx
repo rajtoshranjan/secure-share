@@ -32,10 +32,10 @@ type FileTableData = FileData & {
 
 type FileTableProps = {
   files: FileTableData[];
-  onShare?: (id: string) => void;
-  onDelete?: (id: string) => void;
+  onShare?: (file: FileData) => void;
+  onDelete?: (file: FileData) => void;
   onDownload?: (file: FileData) => void;
-  onManagePermissions?: (id: string) => void;
+  onManagePermissions?: (file: FileData) => void;
   isLoading?: boolean;
 };
 
@@ -113,7 +113,7 @@ export const FileTable: React.FC<FileTableProps> = ({
                     )}
                     {canShareFile && (
                       <DropdownMenuItem
-                        onClick={() => onShare(file.id)}
+                        onClick={() => onShare(file)}
                         className="gap-2"
                       >
                         <Share2 className="size-4" />
@@ -122,7 +122,7 @@ export const FileTable: React.FC<FileTableProps> = ({
                     )}
                     {canManagePermissions && (
                       <DropdownMenuItem
-                        onClick={() => onManagePermissions(file.id)}
+                        onClick={() => onManagePermissions(file)}
                         className="gap-2"
                       >
                         <Info className="size-4" />
@@ -131,7 +131,7 @@ export const FileTable: React.FC<FileTableProps> = ({
                     )}
                     {canDeleteFile && (
                       <DropdownMenuItem
-                        onClick={() => onDelete(file.id)}
+                        onClick={() => onDelete(file)}
                         className="gap-2 text-destructive focus:text-destructive"
                       >
                         <Trash2 className="size-4" />

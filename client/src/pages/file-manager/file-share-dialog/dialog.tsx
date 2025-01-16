@@ -1,5 +1,6 @@
-import { DialogProps } from '@radix-ui/react-dialog';
+import { DialogDescription, DialogProps } from '@radix-ui/react-dialog';
 import React from 'react';
+import { FileIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -10,19 +11,30 @@ import {
   TabsList,
   TabsTrigger,
 } from '../../../components/ui';
+import { FileData } from '../../../services/apis';
+import { StringFormatter } from '../../../lib/utils';
 import { ShareWithUser } from './share-with-user';
 import { GenerateLink } from './generate-link';
 
 type FileShareDialogProps = DialogProps & {
-  fileId: string;
+  file: FileData | null;
 };
 
-export const FileShareDialog = ({ fileId, ...props }: FileShareDialogProps) => {
+export const FileShareDialog = ({ file, ...props }: FileShareDialogProps) => {
   return (
     <Dialog {...props}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Share File</DialogTitle>
+          <DialogDescription
+            className="flex items-center gap-1 text-sm text-muted-foreground"
+            title={file?.name}
+          >
+            <FileIcon className="size-4" />
+            <span className="font-medium">
+              {StringFormatter.truncate(file?.name ?? '', 30)}
+            </span>
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="user" className="w-full">
@@ -33,19 +45,16 @@ export const FileShareDialog = ({ fileId, ...props }: FileShareDialogProps) => {
 
           <TabsContent value="user" className="space-y-4">
             <ShareWithUser
-              fileId={fileId}
+              fileId={file?.id ?? ''}
               onSuccess={() => props.onOpenChange?.(false)}
             />
           </TabsContent>
 
           <TabsContent value="link" className="space-y-4">
-            <GenerateLink fileId={fileId} />
+            <GenerateLink fileId={file?.id ?? ''} />
           </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
   );
 };
-
-export * from './share-with-user';
-export * from './generate-link';

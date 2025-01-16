@@ -1,5 +1,5 @@
-import { DialogProps } from '@radix-ui/react-dialog';
-import React from 'react';
+import { DialogDescription, DialogProps } from '@radix-ui/react-dialog';
+import { FileIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -10,15 +10,17 @@ import {
   TabsList,
   TabsTrigger,
 } from '../../../components/ui';
-import { UserPermissions } from './user-permissions';
+import { StringFormatter } from '../../../lib/utils';
+import { FileData } from '../../../services/apis';
 import { SharedLinks } from './shared-links';
+import { UserPermissions } from './user-permissions';
 
 type FilePermissionsDialogProps = DialogProps & {
-  fileId: string;
+  file: FileData | null;
 };
 
 export const FilePermissionsDialog = ({
-  fileId,
+  file,
   ...props
 }: FilePermissionsDialogProps) => {
   return (
@@ -26,6 +28,15 @@ export const FilePermissionsDialog = ({
       <DialogContent className="outline-none sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Manage Access</DialogTitle>
+          <DialogDescription
+            className="flex items-center gap-1 text-sm text-muted-foreground"
+            title={file?.name}
+          >
+            <FileIcon className="size-4" />
+            <span className="font-medium">
+              {StringFormatter.truncate(file?.name ?? '', 30)}
+            </span>
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="users" className="h-[350px] w-full">
@@ -35,11 +46,11 @@ export const FilePermissionsDialog = ({
           </TabsList>
 
           <TabsContent value="users" className="space-y-4">
-            <UserPermissions fileId={fileId} />
+            <UserPermissions fileId={file?.id ?? ''} />
           </TabsContent>
 
           <TabsContent value="links" className="space-y-4">
-            <SharedLinks fileId={fileId} />
+            <SharedLinks fileId={file?.id ?? ''} />
           </TabsContent>
         </Tabs>
       </DialogContent>

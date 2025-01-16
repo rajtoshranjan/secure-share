@@ -27,7 +27,10 @@ export const ProfileDialog: React.FC<DialogProps> = (props) => {
             <TabsTrigger value="password">Change Password</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="profile" className="space-y-4">
+          <TabsContent
+            value="profile"
+            className="space-y-4 ring-0 focus-visible:ring-0"
+          >
             <ProfileForm onSuccess={() => props.onOpenChange?.(false)} />
           </TabsContent>
 

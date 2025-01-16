@@ -17,7 +17,7 @@ import { FilePermissionsDialog } from './file-permissions-dialog';
 export function FileManagementPage() {
   // States.
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [activeFileId, setActiveFileId] = useState<string | null>(null);
+  const [activeFile, setActiveFile] = useState<FileData | null>(null);
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
 
   // Queries.
@@ -44,8 +44,8 @@ export function FileManagementPage() {
     })) || [];
 
   // Handlers.
-  const handleShare = (id: string) => {
-    setActiveFileId(id);
+  const handleShare = (file: FileData) => {
+    setActiveFile(file);
     setIsShareModalOpen(true);
   };
 
@@ -76,12 +76,13 @@ export function FileManagementPage() {
     });
   };
 
-  const handleDelete = (id: string) => {
-    deleteFile(id, {
+  const handleDelete = (file: FileData) => {
+    deleteFile(file.id, {
       onSuccess: () => {
         refetchFiles();
         toast({
           title: 'File deleted successfully',
+          description: file.name,
         });
       },
       onError: (error) => {
@@ -90,15 +91,15 @@ export function FileManagementPage() {
     });
   };
 
+  const handleManagePermissions = (file: FileData) => {
+    setActiveFile(file);
+    setIsPermissionsModalOpen(true);
+  };
+
   const handleTabChange = (value: string) => {
     if (value === 'shared') {
       refetchSharedFiles();
     }
-  };
-
-  const handleManagePermissions = (id: string) => {
-    setActiveFileId(id);
-    setIsPermissionsModalOpen(true);
   };
 
   return (
@@ -140,12 +141,12 @@ export function FileManagementPage() {
       <FileShareDialog
         open={isShareModalOpen}
         onOpenChange={setIsShareModalOpen}
-        fileId={activeFileId ?? ''}
+        file={activeFile}
       />
       <FilePermissionsDialog
         open={isPermissionsModalOpen}
         onOpenChange={setIsPermissionsModalOpen}
-        fileId={activeFileId ?? ''}
+        file={activeFile}
       />
     </div>
   );
