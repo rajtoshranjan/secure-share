@@ -45,6 +45,9 @@ class DriveMemberSerializer(serializers.ModelSerializer):
         except User.DoesNotExist:
             raise serializers.ValidationError({'email': 'User not found'})
 
+        if user == self.context.get('request').user:
+            raise serializers.ValidationError({'email': 'You cannot add yourself to the drive'})
+
         validated_data['user'] = user
         validated_data['drive'] = get_active_drive(self.context.get('request'))
         return super().create(validated_data)

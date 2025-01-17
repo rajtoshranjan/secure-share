@@ -1,19 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Theme } from '../../hooks';
+import { Theme } from '../enums';
+import { localStorageManager } from '../../lib/utils';
 
 interface ThemeState {
   current: Theme;
 }
 
-// Helper function to update theme in DOM and localStorage.
 const updateTheme = (theme: Theme) => {
   document.body.classList.remove('light', 'dark');
   document.body.classList.add(theme);
-  localStorage.setItem('theme', theme);
+  localStorageManager.setTheme(theme);
 };
 
 const getThemeFromLocalStorage = (): Theme => {
-  const theme = (localStorage.getItem('theme') as Theme) || Theme.Light;
+  const theme = (localStorageManager.getTheme() as Theme) || Theme.Light;
   updateTheme(theme);
   return theme;
 };
@@ -38,5 +38,8 @@ const themeSlice = createSlice({
   },
 });
 
+// Selectors
+export const selectTheme = (state: { theme: ThemeState }) => state.theme;
+
 export const { toggleTheme, setTheme } = themeSlice.actions;
-export default themeSlice.reducer;
+export const themeReducer = themeSlice.reducer;

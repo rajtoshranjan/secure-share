@@ -1,113 +1,157 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Trash2, UserPlus } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '../store/hooks';
 import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table';
+  Spinner,
+} from '../components/ui';
+import { toast } from '../hooks/use-toast';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../components/ui/dialog';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../components/ui/select';
+  useGetDriveMembers,
+  useAddDriveMember,
+  useUpdateDriveMember,
+  useRemoveDriveMember,
+  handleResponseErrorMessage,
+  DriveRole,
+} from '../services/apis';
+import { AddDriveMemberPayload } from '../services/apis/drives/types';
+import { selectActiveDrive } from '../store/slices/drive-slice';
 
 export function UsersPage() {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'admin' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'regular' },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'guest' },
-  ]);
+  // Store.
+  const { canManageUsers } = useAppSelector(selectActiveDrive);
 
+  const { activeDriveId } = useAppSelector(selectActiveDrive);
+
+  // States.
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const form = useForm<AddDriveMemberPayload>();
 
-  const handleAddUser = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const newUser = {
-      id: users.length + 1,
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
-      role: formData.get('role') as string,
-    };
-    setUsers([...users, newUser]);
-    setIsAddUserModalOpen(false);
+  // Navigation.
+  const navigate = useNavigate();
+  if (!canManageUsers) {
+    navigate('/');
+  }
+
+  // Queries.
+  const {
+    data: membersResponse,
+    isPending,
+    refetch,
+  } = useGetDriveMembers(activeDriveId ?? '', canManageUsers);
+  const { mutate: addMember } = useAddDriveMember();
+  const { mutate: updateMember } = useUpdateDriveMember();
+  const { mutate: removeMember } = useRemoveDriveMember();
+
+  const handleAddUser = (data: AddDriveMemberPayload) => {
+    addMember(data, {
+      onSuccess: () => {
+        toast({
+          title: 'User added successfully',
+        });
+        setIsAddUserModalOpen(false);
+        refetch();
+        form.reset();
+      },
+      onError: (error) => {
+        handleResponseErrorMessage(error, form.setError);
+      },
+    });
+  };
+
+  const handleUpdateRole = (memberId: string, role: DriveRole) => {
+    updateMember(
+      { id: memberId, role },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'User role updated successfully',
+          });
+          refetch();
+        },
+        onError: (error) => {
+          handleResponseErrorMessage(error);
+        },
+      },
+    );
+  };
+
+  const handleDelete = (memberId: string) => {
+    removeMember(memberId, {
+      onSuccess: () => {
+        toast({
+          title: 'User removed successfully',
+        });
+        refetch();
+      },
+      onError: (error) => {
+        handleResponseErrorMessage(error);
+      },
+    });
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">User Management</h1>
+        <h1 className="text-2xl font-bold">Drive Members</h1>
         <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
           <DialogTrigger asChild>
             <Button>
-              <UserPlus className="size-4" />
-              Add User
+              <UserPlus className="mr-2 size-4" />
+              Add Member
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New User</DialogTitle>
+              <DialogTitle>Add New Member</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleAddUser} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" required />
-              </div>
+            <form
+              onSubmit={form.handleSubmit(handleAddUser)}
+              className="space-y-4"
+            >
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" required />
+                <Input
+                  id="email"
+                  type="email"
+                  {...form.register('email')}
+                  error={form.formState.errors.email?.message}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
-                <Select name="role">
-                  <SelectTrigger id="role">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="User">User</SelectItem>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="submit" className="w-full">
-                Add User
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>
-                <Select defaultValue={user.role}>
-                  <SelectTrigger className="w-[150px]">
+                <Select
+                  onValueChange={(value) =>
+                    form.setValue('role', value as DriveRole)
+                  }
+                  value={form.watch('role')}
+                >
+                  <SelectTrigger
+                    id="role"
+                    className={
+                      form.formState.errors.role ? 'border-destructive' : ''
+                    }
+                  >
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
@@ -116,14 +160,76 @@ export function UsersPage() {
                     <SelectItem value="guest">Guest</SelectItem>
                   </SelectContent>
                 </Select>
-              </TableCell>
-              <TableCell className="text-right">
-                <Button variant="destructive" size="sm">
-                  <Trash2 className=" size-4" />
-                </Button>
+                {form.formState.errors.role && (
+                  <p className="text-sm text-destructive">
+                    {form.formState.errors.role.message}
+                  </p>
+                )}
+              </div>
+              <Button type="submit" className="w-full">
+                Add Member
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead className="w-[100px]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {isPending ? (
+            <TableRow>
+              <TableCell colSpan={4} className="text-center">
+                <Spinner />
               </TableCell>
             </TableRow>
-          ))}
+          ) : membersResponse?.data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={4} className="h-24 text-center">
+                No members found
+              </TableCell>
+            </TableRow>
+          ) : (
+            membersResponse?.data.map((member) => (
+              <TableRow key={member.id}>
+                <TableCell className="font-medium">{member.userName}</TableCell>
+                <TableCell>{member.userEmail}</TableCell>
+                <TableCell>
+                  <Select
+                    defaultValue={member.role}
+                    onValueChange={(value) =>
+                      handleUpdateRole(member.id, value as DriveRole)
+                    }
+                  >
+                    <SelectTrigger className="w-[150px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="regular">Regular</SelectItem>
+                      <SelectItem value="guest">Guest</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(member.id)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

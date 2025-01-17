@@ -74,9 +74,9 @@ export const downloadFileRequest = async (fileId: string): Promise<Blob> => {
 };
 
 // Hooks
-export const useGetFiles = (enabled: boolean = true) =>
+export const useGetFiles = (driveId: string, enabled: boolean = true) =>
   useQuery({
-    queryKey: ['files'],
+    queryKey: ['files', driveId],
     queryFn: getFilesRequest,
     enabled,
   });

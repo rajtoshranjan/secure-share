@@ -1,12 +1,12 @@
 import lodash from 'lodash';
 import { UseFormSetError } from 'react-hook-form';
 import { toast } from '../../hooks';
-import { history, tokenManager } from '../../lib/utils';
+import { history, localStorageManager } from '../../lib/utils';
 import { ApiErrorResponse } from './types';
 
 export const logout = () => {
-  tokenManager.removeToken();
-  tokenManager.removeRefreshToken();
+  localStorageManager.removeToken();
+  localStorageManager.removeRefreshToken();
 
   history.push('/login');
 };

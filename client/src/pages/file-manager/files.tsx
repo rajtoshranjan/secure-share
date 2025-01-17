@@ -9,12 +9,16 @@ import {
   useGetFiles,
   useGetSharedFiles,
 } from '../../services/apis';
+import { useAppSelector } from '../../store/hooks';
+import { selectActiveDrive } from '../../store/slices';
 import { FileShareDialog } from './file-share-dialog';
 import { FileUpload } from './file-upload';
 import { FileTable } from './files-table';
 import { FilePermissionsDialog } from './file-permissions-dialog';
 
 export function FileManagementPage() {
+  const { activeDriveId } = useAppSelector(selectActiveDrive);
+
   // States.
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeFile, setActiveFile] = useState<FileData | null>(null);
@@ -25,7 +29,7 @@ export function FileManagementPage() {
     data: filesResponse,
     isLoading: isLoadingFiles,
     refetch: refetchFiles,
-  } = useGetFiles(true);
+  } = useGetFiles(activeDriveId ?? '');
 
   const {
     data: sharedFilesResponse,

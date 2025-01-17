@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { EnvVariables } from '../../config';
-import { tokenManager } from '../../lib/utils';
+import { localStorageManager } from '../../lib/utils';
 import { ApiErrorType } from './enums';
 import { logout } from './helpers';
 import { ApiErrorResponse, ApiResponse, RefreshTokenResponse } from './types';
@@ -18,9 +18,11 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = tokenManager.getToken();
+  const token = localStorageManager.getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    config.headers['X-Active-Drive-Id'] =
+      localStorageManager.getActiveDriveId();
   }
   return config;
 });
@@ -76,7 +78,7 @@ api.interceptors.response.use(
 
 export const handleRefreshToken = async () => {
   try {
-    const refreshToken = tokenManager.getRefreshToken();
+    const refreshToken = localStorageManager.getRefreshToken();
     if (refreshToken) {
       const res = await api.post<
         Record<string, string>,
@@ -86,7 +88,7 @@ export const handleRefreshToken = async () => {
       });
 
       if (res.data.access) {
-        tokenManager.setToken(res.data.access);
+        localStorageManager.setToken(res.data.access);
       }
     } else {
       logout();

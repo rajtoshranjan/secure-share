@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import PermissionDenied
 
 from ..models import FilePermission
 from ..serializers import FilePermissionSerializer
@@ -21,7 +22,7 @@ class FilePermissionViewSet(ModelViewSet):
         # Ensure user owns the file being shared.
         file = serializer.validated_data['file']
         if file.owner != self.request.user:
-            raise PermissionError("You can only share files you own")
+            raise PermissionDenied("You can only share files you own")
         serializer.save()
 
     def partial_update(self, request, pk=None):

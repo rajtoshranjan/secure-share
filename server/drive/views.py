@@ -1,16 +1,16 @@
 from django.db.models import Q
 from drive.helpers import get_active_drive
-from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 
 from .constants import DriveMemberRole
 from .models import Drive, DriveMember
-from .permissions import CanManageDrive, IsDriveAdmin
+from .permissions import CanManageDrive, CanManageDriveMembers
 from .serializers import DriveMemberSerializer, DriveSerializer
 
 
-class DriveViewSet(viewsets.ModelViewSet):
+class DriveViewSet(ModelViewSet):
     serializer_class = DriveSerializer
     permission_classes = [CanManageDrive]
 
@@ -25,9 +25,9 @@ class DriveViewSet(viewsets.ModelViewSet):
         )
 
 
-class DriveUserViewSet(viewsets.ModelViewSet):
+class DriveUserViewSet(ModelViewSet):
     serializer_class = DriveMemberSerializer
-    permission_classes = [IsDriveAdmin]
+    permission_classes = [CanManageDriveMembers]
 
     def get_queryset(self):
         drive = get_active_drive(self.request, raise_exception=False)
@@ -36,10 +36,10 @@ class DriveUserViewSet(viewsets.ModelViewSet):
         return DriveMember.objects.none()
 
     def perform_create(self, serializer):
-        drive = serializer.validated_data['drive']
-        if not drive.members.filter(
+        drive = get_active_drive(self.request)
+        if drive.owner != self.request.user and not drive.members.filter(
             user=self.request.user,
             role=DriveMemberRole.ADMIN.value
         ).exists():
-            raise PermissionDenied("You must be a drive admin")
+            raise PermissionDenied("You must be a drive admin or owner to add members to this drive")
         serializer.save()

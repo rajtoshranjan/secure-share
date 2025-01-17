@@ -47,7 +47,7 @@ def handle_permission_error(exc, context, response):
         {
             "success": False,
             "status_code": status.HTTP_403_FORBIDDEN,
-            "message": "Permission denied",
+            "message": str(exc),
             "type": "PermissionDenied",
         }
     )
@@ -80,8 +80,6 @@ def handle_method_not_allowed(exc, context, response):
 
 def handle_generic_error(exc, context, response):
     """Handle any unhandled exceptions."""
-
-    print(context)
 
     if not response:
         return Response(

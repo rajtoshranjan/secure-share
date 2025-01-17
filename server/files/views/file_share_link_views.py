@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
@@ -26,7 +27,7 @@ class FileShareLinkViewSet(ModelViewSet):
         # Ensure user owns the file being shared.
         file = serializer.validated_data['file']
         if file.owner != self.request.user:
-            raise PermissionError("You can only share files you own")
+            raise PermissionDenied("You can only share files you own")
         serializer.save()
 
     @action(detail=True, methods=['get'], permission_classes=[AllowAny])
