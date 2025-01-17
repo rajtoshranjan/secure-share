@@ -35,6 +35,8 @@ export const SelectDrive = () => {
       );
       if (defaultDrive) {
         dispatch(setActiveDrive(defaultDrive));
+      } else if (myDrives?.[0]) {
+        dispatch(setActiveDrive(myDrives[0]));
       }
     }
   }, [driveResponse]);
