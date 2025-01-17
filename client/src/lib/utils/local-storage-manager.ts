@@ -1,4 +1,7 @@
-export const tokenManager = {
+import { Theme } from '../../store/enums';
+
+export const localStorageManager = {
+  // Auth.
   getToken: () => {
     return localStorage.getItem('token');
   },
@@ -19,5 +22,24 @@ export const tokenManager = {
   },
   hasToken: () => {
     return !!localStorage.getItem('token');
+  },
+
+  // Drive.
+  getActiveDriveId: () => {
+    return localStorage.getItem('activeDriveId');
+  },
+  setActiveDriveId: (id: string) => {
+    localStorage.setItem('activeDriveId', id);
+  },
+  removeActiveDriveId: () => {
+    localStorage.removeItem('activeDriveId');
+  },
+
+  // Theme.
+  getTheme: () => {
+    return localStorage.getItem('theme');
+  },
+  setTheme: (theme: Theme) => {
+    localStorage.setItem('theme', theme);
   },
 };

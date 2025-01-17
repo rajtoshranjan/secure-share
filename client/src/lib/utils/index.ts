@@ -1,4 +1,4 @@
 export * from './classnames';
-export * from './token-manager';
+export * from './local-storage-manager';
 export * from './history';
 export * from './formatters';

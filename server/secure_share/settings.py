@@ -199,7 +199,7 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
-CORS_ALLOW_HEADERS = default_headers
+CORS_ALLOW_HEADERS = [*default_headers, 'X-Active-Drive-Id']
 
 
 # File upload settings

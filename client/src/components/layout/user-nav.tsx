@@ -1,6 +1,6 @@
 import { User } from 'lucide-react';
 import React, { useState } from 'react';
-import { tokenManager } from '../../lib/utils';
+import { localStorageManager } from '../../lib/utils';
 import { useLogout } from '../../services/apis/auth';
 import { logout } from '../../services/apis/helpers';
 import {
@@ -25,7 +25,7 @@ export const UserNav: React.FC<ButtonProps> = (props) => {
 
   // Handlers.
   const handleLogout = () => {
-    const refreshToken = tokenManager.getRefreshToken();
+    const refreshToken = localStorageManager.getRefreshToken();
     if (refreshToken) {
       sendLogoutRequest(
         {

@@ -1,8 +1,8 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { tokenManager } from '../../lib/utils';
+import { localStorageManager } from '../../lib/utils';
 
 export function AuthGuard() {
-  const isAuthenticated = tokenManager.hasToken();
+  const isAuthenticated = localStorageManager.hasToken();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

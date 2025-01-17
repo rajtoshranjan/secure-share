@@ -16,7 +16,7 @@ import {
   Input,
   Label,
 } from '../../components/ui';
-import { tokenManager } from '../../lib/utils';
+import { localStorageManager } from '../../lib/utils';
 import {
   handleResponseErrorMessage,
   useLogin,
@@ -83,8 +83,8 @@ export function LoginPage() {
           setEphemeralToken(response.data.ephemeral_token);
           setStep('mfa-verify');
         } else {
-          tokenManager.setToken(response.data.access);
-          tokenManager.setRefreshToken(response.data.refresh);
+          localStorageManager.setToken(response.data.access);
+          localStorageManager.setRefreshToken(response.data.refresh);
           navigate('/');
         }
       },
@@ -100,8 +100,8 @@ export function LoginPage() {
       { ephemeral_token: ephemeralToken, code: data.code },
       {
         onSuccess: (response) => {
-          tokenManager.setToken(response.data.access);
-          tokenManager.setRefreshToken(response.data.refresh);
+          localStorageManager.setToken(response.data.access);
+          localStorageManager.setRefreshToken(response.data.refresh);
           navigate('/');
         },
         onError: (error) => {
