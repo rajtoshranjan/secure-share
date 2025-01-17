@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     # Apps.
     "accounts",
     "files",
+    "drive",
 ]
 
 MIDDLEWARE = [

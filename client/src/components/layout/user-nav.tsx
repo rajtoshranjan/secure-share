@@ -1,10 +1,11 @@
 import { User } from 'lucide-react';
-import { useState } from 'react';
-import { logout } from '../../services/apis/helpers';
-import { useLogout } from '../../services/apis/auth';
+import React, { useState } from 'react';
 import { tokenManager } from '../../lib/utils';
+import { useLogout } from '../../services/apis/auth';
+import { logout } from '../../services/apis/helpers';
 import {
   Button,
+  ButtonProps,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -14,7 +15,7 @@ import {
 import { MFASetup } from './mfa';
 import { ProfileDialog } from './profile';
 
-export function UserNav() {
+export const UserNav: React.FC<ButtonProps> = (props) => {
   // States.
   const [showMFASetup, setShowMFASetup] = useState(false);
   const [showProfileDialog, setShowProfileDialog] = useState(false);
@@ -48,8 +49,8 @@ export function UserNav() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative size-8">
-            <User className="size-5" />
+          <Button {...props}>
+            <User className="size-3.5 sm:size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -77,4 +78,4 @@ export function UserNav() {
       />
     </>
   );
-}
+};

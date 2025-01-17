@@ -5,6 +5,7 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
+from drive.models import Drive
 from secure_share.models import BaseModel
 
 
@@ -21,6 +22,11 @@ class File(BaseModel):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='owned_files'
+    )
+    drive = models.ForeignKey(
+        Drive,
+        on_delete=models.CASCADE,
+        related_name='files'
     )
     encryption_key = models.BinaryField(editable=False, null=True)
 
@@ -108,4 +114,3 @@ class File(BaseModel):
         """
         decrypted_content = self.get_decrypted_content()
         return ContentFile(decrypted_content)
-

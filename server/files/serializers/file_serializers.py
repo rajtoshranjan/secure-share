@@ -1,3 +1,4 @@
+from drive.helpers import get_active_drive
 from rest_framework import serializers
 
 from ..models import File
@@ -11,10 +12,15 @@ class FileSerializer(serializers.ModelSerializer):
         write_only_fields = ['file']
 
     def validate(self, attrs):
-        file = attrs.get('file')
-        if file:
-            attrs['name'] = file.name
-        return super().validate(attrs)
+        validated_data = super().validate(attrs)
+
+        drive = get_active_drive(self.context['request'])
+        validated_data['drive'] = drive
+
+        if file := validated_data.get('file'):
+            validated_data['name'] = file.name
+
+        return validated_data
 
 
 class SharedFileSerializer(serializers.Serializer):
