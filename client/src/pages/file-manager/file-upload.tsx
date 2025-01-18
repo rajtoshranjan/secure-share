@@ -2,12 +2,17 @@ import { Plus } from 'lucide-react';
 import React from 'react';
 import { handleResponseErrorMessage, useUploadFile } from '../../services/apis';
 import { toast } from '../../hooks';
+import { cn } from '../../lib/utils';
 
 export type FileUploadProps = {
   onFileUploadSuccess: () => void;
+  className?: string;
 };
 
-export const FileUpload = ({ onFileUploadSuccess }: FileUploadProps) => {
+export const FileUpload = ({
+  onFileUploadSuccess,
+  className,
+}: FileUploadProps) => {
   // Queries.
   const { mutate: uploadFile } = useUploadFile();
 
@@ -39,7 +44,12 @@ export const FileUpload = ({ onFileUploadSuccess }: FileUploadProps) => {
   };
 
   return (
-    <div className="group relative rounded-lg border-2 border-dashed border-muted-foreground/25 bg-card p-3 transition-all hover:border-primary/50 hover:bg-accent hover:shadow-lg">
+    <div
+      className={cn(
+        'group relative rounded-lg border-2 border-dashed border-muted-foreground/25 bg-card p-3 transition-all hover:border-primary/50 hover:bg-accent hover:shadow-lg',
+        className,
+      )}
+    >
       <label
         htmlFor="file-upload"
         className="flex cursor-pointer flex-col items-center justify-center"
