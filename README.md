@@ -102,6 +102,16 @@ To run the project, you’ll need the following installed on your system:
 
 #### Backend Setup
 
+##### Option 1: Using Docker
+
+<sub>_The Docker Compose configuration for the server supports auto-reload on save of any Python files, making it convenient for backend development._</sub>
+
+```bash
+docker compose up server
+```
+
+##### Option 2: Using Python
+
 1. Navigate to the `server` directory:
    ```bash
    cd server
