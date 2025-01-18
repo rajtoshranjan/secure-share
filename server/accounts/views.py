@@ -17,26 +17,28 @@ class UserViewSet(ModelViewSet):
     permission_classes = [IsSelf]
 
     def get_permissions(self):
-        if self.action == 'list':
+        if self.action == "list":
             self.permission_classes = [IsAuthenticated]
-        elif self.action == 'create':
+        elif self.action == "create":
             self.permission_classes = [AllowAny]
         return super(UserViewSet, self).get_permissions()
 
     def get_queryset(self):
         return User.objects.all()
 
-    @action(detail=False,  methods=["get", 'patch'])
+    @action(detail=False, methods=["get", "patch"])
     def me(self, request):
-        if request.method == 'GET':
+        if request.method == "GET":
             serializer = self.serializer_class(request.user)
             response = {
                 "message": "Profile fetched successfully.",
                 "data": serializer.data,
             }
             return Response(response, status=status.HTTP_200_OK)
-        elif request.method == 'PATCH':
-            serializer = self.serializer_class(request.user, data=request.data, partial=True)
+        elif request.method == "PATCH":
+            serializer = self.serializer_class(
+                request.user, data=request.data, partial=True
+            )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             response = {
@@ -56,8 +58,7 @@ class UserViewSet(ModelViewSet):
         }
         return Response(response, status=status.HTTP_200_OK)
 
-
-    @action(detail=False,  methods=["post"])
+    @action(detail=False, methods=["post"])
     def logout(self, request):
         try:
             refresh_token = request.data["refresh_token"]
@@ -73,4 +74,3 @@ class UserViewSet(ModelViewSet):
         except Exception as e:
             response = {"message": str(e)}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
-

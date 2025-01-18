@@ -1,6 +1,7 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from rest_framework import status
+
 from secure_share.tests import BaseTestCase
 
 from ..models import File
@@ -10,18 +11,16 @@ class TestFileEndpoints(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.authenticate(self.user)
-        
+
         # Create test file with proper content
         self.test_file_content = b"test file content"
         self.file = File.objects.create(
             name="test.txt",
             file=SimpleUploadedFile(
-                "test.txt",
-                self.test_file_content,
-                content_type="text/plain"
+                "test.txt", self.test_file_content, content_type="text/plain"
             ),
             drive=self.default_drive,
-            owner=self.user
+            owner=self.user,
         )
         # Save file before encryption
         self.file.save()
@@ -32,20 +31,12 @@ class TestFileEndpoints(BaseTestCase):
         # Arrange
         file_content = b"new file content"
         file = SimpleUploadedFile(
-            "new_file.txt",
-            file_content,
-            content_type="text/plain"
+            "new_file.txt", file_content, content_type="text/plain"
         )
-        data = {
-            "file": file
-        }
+        data = {"file": file}
 
         # Act
-        response = self.client.post(
-            reverse("file-list"),
-            data,
-            format="multipart"
-        )
+        response = self.client.post(reverse("file-list"), data, format="multipart")
 
         # Assert
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -73,7 +64,7 @@ class TestFileEndpoints(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.get("Content-Disposition"),
-            f'attachment; filename="{self.file.name}"'
+            f'attachment; filename="{self.file.name}"',
         )
         # Read streaming content
         content = b"".join(response.streaming_content)

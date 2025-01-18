@@ -3,7 +3,6 @@ from django.contrib.auth.password_validation import validate_password
 
 
 class UserManager(BaseUserManager):
-
     def create_user(self, email: str, password: str, **extra_fields):
 
         email = self.normalize_email(email)

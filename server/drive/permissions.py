@@ -14,10 +14,12 @@ class CanManageDriveMembers(BasePermission):
     def has_permission(self, request, view):
         drive = get_active_drive(request)
 
-        return drive.owner == request.user or drive.members.filter(
-            user=request.user,
-            role=DriveMemberRole.ADMIN.value
-        ).exists()
+        return (
+            drive.owner == request.user
+            or drive.members.filter(
+                user=request.user, role=DriveMemberRole.ADMIN.value
+            ).exists()
+        )
 
     def has_object_permission(self, request, view, drive_member: DriveMember):
         return request.user.is_authenticated and (

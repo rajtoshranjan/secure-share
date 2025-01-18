@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from drive.models import Drive
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -21,5 +20,5 @@ class BaseTestCase(APITestCase):
         self.token = RefreshToken.for_user(user or self.user)
         self.client.credentials(
             HTTP_AUTHORIZATION=f"Bearer {self.token.access_token}",
-            HTTP_X_ACTIVE_DRIVE_ID=str(self.default_drive.id)
+            HTTP_X_ACTIVE_DRIVE_ID=str(self.default_drive.id),
         )

@@ -1,6 +1,7 @@
 # import base user
 from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
+
 from secure_share.models import BaseModel
 
 from .managers import UserManager

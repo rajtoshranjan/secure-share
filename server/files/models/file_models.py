@@ -5,6 +5,7 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
+
 from drive.models import Drive
 from secure_share.models import BaseModel
 
@@ -12,22 +13,16 @@ from secure_share.models import BaseModel
 def get_file_path(instance, filename):
     _, ext = os.path.splitext(filename)
     id = instance.id or uuid4()
-    return f'files/{instance.owner.id}/{id}{ext}'
+    return f"files/{instance.owner.id}/{id}{ext}"
 
 
 class File(BaseModel):
     name = models.CharField(max_length=255)
     file = models.FileField(upload_to=get_file_path)
     owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='owned_files'
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="owned_files"
     )
-    drive = models.ForeignKey(
-        Drive,
-        on_delete=models.CASCADE,
-        related_name='files'
-    )
+    drive = models.ForeignKey(Drive, on_delete=models.CASCADE, related_name="files")
     encryption_key = models.BinaryField(editable=False, null=True)
 
     class Meta:
@@ -36,7 +31,7 @@ class File(BaseModel):
                 fields=["name", "owner"],
                 name="unique_file_name_owner",
                 violation_error_message="A file with this name already exists",
-                violation_error_code="unique_file_name_owner"
+                violation_error_code="unique_file_name_owner",
             )
         ]
 

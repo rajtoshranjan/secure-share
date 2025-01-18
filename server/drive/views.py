@@ -1,8 +1,9 @@
 from django.db.models import Q
-from drive.helpers import get_active_drive
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
+
+from drive.helpers import get_active_drive
 
 from .constants import DriveMemberRole
 from .models import Drive, DriveMember
@@ -15,7 +16,7 @@ class DriveViewSet(ModelViewSet):
     permission_classes = [CanManageDrive]
 
     def get_permissions(self):
-        if self.action in ['create', 'list']:
+        if self.action in ["create", "list"]:
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
@@ -40,9 +41,13 @@ class DriveUserViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         drive = get_active_drive(self.request)
-        if drive.owner != self.request.user and not drive.members.filter(
-            user=self.request.user,
-            role=DriveMemberRole.ADMIN.value
-        ).exists():
-            raise PermissionDenied("You must be a drive admin or owner to add members to this drive")
+        if (
+            drive.owner != self.request.user
+            and not drive.members.filter(
+                user=self.request.user, role=DriveMemberRole.ADMIN.value
+            ).exists()
+        ):
+            raise PermissionDenied(
+                "You must be a drive admin or owner to add members to this drive"
+            )
         serializer.save()

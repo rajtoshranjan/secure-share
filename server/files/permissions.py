@@ -1,9 +1,8 @@
+from rest_framework.permissions import IsAuthenticated
+
 from accounts.models import User
 from drive.constants import DriveMemberRole
 from drive.helpers import get_active_drive
-from files.models.file_permission_models import FilePermission
-from files.models.file_share_link_models import FileShareLink
-from rest_framework.permissions import IsAuthenticated
 
 from .models import File, FilePermission, FileShareLink
 
@@ -29,8 +28,7 @@ def has_manage_file_permission(file: File, user: User):
         return True
 
     if file.drive.members.filter(
-        user=user,
-        role__in=[DriveMemberRole.ADMIN.value, DriveMemberRole.REGULAR.value]
+        user=user, role__in=[DriveMemberRole.ADMIN.value, DriveMemberRole.REGULAR.value]
     ).exists():
         return True
 
@@ -59,10 +57,10 @@ class HasUploadFilePermission(IsAuthenticated):
         if drive.owner == request.user:
             return True
 
-        if drive.members.filter(user=request.user, role__in=[
-            DriveMemberRole.ADMIN.value,
-            DriveMemberRole.REGULAR.value
-        ]).exists():
+        if drive.members.filter(
+            user=request.user,
+            role__in=[DriveMemberRole.ADMIN.value, DriveMemberRole.REGULAR.value],
+        ).exists():
             return True
 
         return False

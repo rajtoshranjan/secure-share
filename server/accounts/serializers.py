@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         validated_data = super().validate(attrs)
-        
+
         # Validate on create.
         if not self.instance:
             validation_errors = {}
@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
+        instance.name = validated_data.get("name", instance.name)
         # TODO: Update email after email verification.
         instance.save()
         return instance

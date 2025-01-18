@@ -6,10 +6,10 @@ Secure Share is a robust platform designed to simplify and enhance the way users
 
 ## Main Features
 
-- **Authentication**  
+- **Authentication**
   A secure login system with Multi-Factor Authentication (MFA) using authenticator apps for enhanced security.
 
-- **Access Control**  
+- **Access Control**
   Role-based permission settings to control who can access files and drives, ensuring privacy and compliance.
 
 - **File Management**
@@ -18,7 +18,7 @@ Secure Share is a robust platform designed to simplify and enhance the way users
   - Share files with public links that expire after a set time.
   - Share files with specific users with either "download-only" or "view-only" permissions.
 
-- **Simple Design**  
+- **Simple Design**
   A user-friendly interface with a clean, responsive layout for a smooth and intuitive user experience.
 
 ## Technology Stack

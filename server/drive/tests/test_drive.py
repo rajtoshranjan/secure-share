@@ -1,5 +1,6 @@
 from django.urls import reverse
 from rest_framework import status
+
 from secure_share.tests import BaseTestCase
 
 from ..models import Drive
@@ -12,17 +13,12 @@ class TestDriveEndpoints(BaseTestCase):
         self.drive = self.default_drive  # Use the default drive
 
         # Create additional test drive
-        self.other_drive = Drive.objects.create(
-            name="Other Drive",
-            owner=self.user
-        )
+        self.other_drive = Drive.objects.create(name="Other Drive", owner=self.user)
 
     def test_create_drive(self):
         """Test drive creation endpoint."""
         # Arrange
-        data = {
-            "name": "New Drive"
-        }
+        data = {"name": "New Drive"}
 
         # Act
         response = self.client.post(reverse("drive-list"), data)
@@ -54,14 +50,11 @@ class TestDriveEndpoints(BaseTestCase):
     def test_update_drive(self):
         """Test drive update endpoint."""
         # Arrange
-        data = {
-            "name": "Updated Drive"
-        }
+        data = {"name": "Updated Drive"}
 
         # Act
         response = self.client.patch(
-            reverse("drive-detail", kwargs={"pk": self.drive.id}),
-            data
+            reverse("drive-detail", kwargs={"pk": self.drive.id}), data
         )
 
         # Assert
