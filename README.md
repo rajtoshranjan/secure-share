@@ -2,6 +2,8 @@
 
 Secure Share is a robust platform designed to simplify and enhance the way users manage and share files. With a focus on security and ease of use, the application provides features like multi-factor authentication, role-based access control, and file encryption to ensure safe and efficient file sharing. Its modern, responsive design ensures accessibility across devices while maintaining a seamless user experience.
 
+![Secure Share](docs/secure-share.png)
+
 ## Main Features
 
 - **Authentication**  
