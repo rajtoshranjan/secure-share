@@ -1,5 +1,6 @@
 import { FileX } from 'lucide-react';
 import { useState } from 'react';
+import { isNil } from 'lodash';
 import { ScrollArea, Spinner } from '../../components/ui';
 import { toast } from '../../hooks/use-toast';
 import {
@@ -36,7 +37,10 @@ export function FileManagementPage({
     data: filesResponse,
     isLoading: isLoadingFiles,
     refetch: refetchFiles,
-  } = useGetFiles(activeDriveId ?? '', fileType === 'drive');
+  } = useGetFiles(
+    activeDriveId ?? '',
+    fileType === 'drive' && !isNil(activeDriveId),
+  );
 
   const { data: sharedFilesResponse, isLoading: isLoadingSharedFiles } =
     useGetSharedFiles(fileType === 'shared');

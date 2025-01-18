@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Select,
   SelectContent,
@@ -15,6 +15,11 @@ export const SelectDrive = () => {
   const dispatch = useAppDispatch();
   const { activeDriveId } = useAppSelector(selectActiveDrive);
 
+  // State.
+  const [selectedDriveId, setSelectedDriveId] = useState<string | null>(
+    activeDriveId,
+  );
+
   // Queries.
   const { data: driveResponse, isLoading } = useGetDrives();
 
@@ -25,24 +30,27 @@ export const SelectDrive = () => {
   const sharedDrives = driveResponse?.data.filter(
     (drive) => drive.role !== 'owner',
   );
-  const defaultDriveId = activeDriveId ?? myDrives?.[0].id;
 
   // Effects.
   useEffect(() => {
     if (driveResponse) {
       const defaultDrive = driveResponse.data.find(
-        (drive) => drive.id === defaultDriveId,
+        (drive) => drive.id === selectedDriveId,
       );
+
       if (defaultDrive) {
         dispatch(setActiveDrive(defaultDrive));
       } else if (myDrives?.[0]) {
         dispatch(setActiveDrive(myDrives[0]));
+        setSelectedDriveId(myDrives[0].id);
       }
     }
   }, [driveResponse]);
 
   // Handlers.
   const handleSelectDrive = (driveId: string) => {
+    setSelectedDriveId(driveId);
+
     const drive = driveResponse?.data.find((drive) => drive.id === driveId);
     if (drive) {
       dispatch(setActiveDrive(drive));
@@ -52,7 +60,7 @@ export const SelectDrive = () => {
   return (
     <Select
       disabled={isLoading}
-      defaultValue={defaultDriveId}
+      value={selectedDriveId ?? undefined}
       onValueChange={handleSelectDrive}
     >
       <SelectTrigger className="h-7 w-[140px] gap-1 rounded-full border-none bg-background/50 px-2.5 text-xs font-medium shadow-none hover:bg-background/80 sm:h-8 sm:w-[180px] sm:px-3 sm:text-sm">
