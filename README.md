@@ -116,7 +116,7 @@ To run the project, you’ll need the following installed on your system:
    python manage.py runserver
    ```
 
-4. The backend will run on `http://localhost:8000` by default, and the frontend will be available on `http://localhost:5173`.
+4. The backend will run on `http://localhost:8000` by default, and the frontend will be available on `http://localhost:3000`.
 
 ## License
 
