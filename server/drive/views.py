@@ -24,6 +24,9 @@ class DriveViewSet(ModelViewSet):
             Q(members__user=self.request.user) | Q(owner=self.request.user)
         )
 
+    def perform_destroy(self, instance):
+        raise PermissionDenied("Deleting a drive is not allowed")
+
 
 class DriveUserViewSet(ModelViewSet):
     serializer_class = DriveMemberSerializer
