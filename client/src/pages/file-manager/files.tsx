@@ -173,9 +173,11 @@ export function FileManagementPage({
                   <Spinner />
                 </div>
               ) : sharedFiles.length === 0 ? (
-                <div className="flex items-center justify-center gap-3 p-8 text-muted-foreground">
-                  <FileX className="size-5" />
-                  <span>No shared files found</span>
+                <div className="flex min-h-[50vh] flex-col items-center justify-center gap-8 p-8 text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <FileX className="size-5" />
+                    <span>No shared files found</span>
+                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
