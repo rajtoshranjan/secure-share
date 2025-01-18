@@ -24,7 +24,7 @@ type FileManagementPageProps = {
 export function FileManagementPage({
   fileType = 'drive',
 }: FileManagementPageProps) {
-  const { activeDriveId } = useAppSelector(selectActiveDrive);
+  const { activeDriveId, canManageFiles } = useAppSelector(selectActiveDrive);
 
   // States.
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -135,7 +135,9 @@ export function FileManagementPage({
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                  <FileUpload onFileUploadSuccess={refetchFiles} />
+                  {canManageFiles && (
+                    <FileUpload onFileUploadSuccess={refetchFiles} />
+                  )}
                   {filesResponse?.data.map((file) => {
                     return (
                       <FileCard

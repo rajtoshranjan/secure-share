@@ -1,4 +1,5 @@
 
+from rest_framework.exceptions import NotFound
 from secure_share.exceptions import BadRequest
 
 from .models import Drive
@@ -13,8 +14,14 @@ def get_active_drive(request, raise_exception=True):
         return None
 
     try:
-        return Drive.objects.get(id=drive_id)
+        drive = Drive.objects.get(id=drive_id)
     except Drive.DoesNotExist:
         if raise_exception:
             raise BadRequest("Active drive not found")
         return None
+
+    if (drive.owner != request.user and
+            not drive.members.filter(user=request.user).exists()):
+        raise NotFound
+
+    return drive

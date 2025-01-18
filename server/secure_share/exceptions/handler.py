@@ -5,7 +5,7 @@ from rest_framework.views import exception_handler
 
 def handle_validation_error(exc, context, response):
     """Handle validation errors."""
-
+    
     return Response(
         {
             "success": False,
@@ -82,6 +82,7 @@ def handle_generic_error(exc, context, response):
     """Handle any unhandled exceptions."""
 
     if not response:
+        print(exc)
         return Response(
             {
                 "success": False,

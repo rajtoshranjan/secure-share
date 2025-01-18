@@ -17,6 +17,8 @@ import {
 } from '../../components/ui';
 import { formatBytes, formatDate, StringFormatter } from '../../lib/utils';
 import { FileData } from '../../services/apis';
+import { useAppSelector } from '../../store/hooks';
+import { selectActiveDrive } from '../../store/slices';
 
 type FileListData = FileData & {
   canDownload?: boolean;
@@ -39,11 +41,21 @@ export const FileCard: React.FC<FileCardProps> = ({
   onDownload,
   onManagePermissions,
 }) => {
+  // Selectors.
+  const { canManageFiles } = useAppSelector(selectActiveDrive);
+
+  // Conditions.
   const canDownloadFile = onDownload && file.canDownload !== false;
-  const canShareFile = onShare && file.canShare !== false;
-  const canDeleteFile = onDelete && file.canDelete !== false;
-  const hasNoActions = !canDownloadFile && !canShareFile && !canDeleteFile;
-  const canManagePermissions = onManagePermissions && file.canShare !== false;
+  const canShareFile = canManageFiles && onShare && file.canShare !== false;
+  const canDeleteFile = canManageFiles && onDelete && file.canDelete !== false;
+  const canManagePermissions =
+    canManageFiles && onManagePermissions && file.canShare !== false;
+
+  const hasNoActions =
+    !canDownloadFile &&
+    !canShareFile &&
+    !canDeleteFile &&
+    !canManagePermissions;
 
   return (
     <div
