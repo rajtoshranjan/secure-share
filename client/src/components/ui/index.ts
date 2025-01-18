@@ -13,3 +13,4 @@ export * from './toast';
 export * from './tooltip';
 export * from './spinner';
 export * from './skeleton';
+export * from './scroll-area';

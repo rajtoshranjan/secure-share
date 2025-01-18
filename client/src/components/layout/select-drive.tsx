@@ -55,7 +55,7 @@ export const SelectDrive = () => {
       defaultValue={defaultDriveId}
       onValueChange={handleSelectDrive}
     >
-      <SelectTrigger className="h-7 w-[140px] gap-1 rounded-full border-none bg-accent/50 px-2.5 text-xs font-medium shadow-none hover:bg-accent/80 sm:h-8 sm:w-[180px] sm:px-3 sm:text-sm">
+      <SelectTrigger className="h-7 w-[140px] gap-1 rounded-full border-none bg-background/50 px-2.5 text-xs font-medium shadow-none hover:bg-background/80 sm:h-8 sm:w-[180px] sm:px-3 sm:text-sm">
         <SelectValue placeholder="Select space" />
       </SelectTrigger>
       <SelectContent className="w-[200px] p-1.5 sm:w-[240px] sm:p-2">

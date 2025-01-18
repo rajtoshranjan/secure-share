@@ -34,6 +34,10 @@ function App() {
             <Route element={<AuthGuard />}>
               <Route element={<Layout />}>
                 <Route index element={<FileManagementPage />} />
+                <Route
+                  path="shared-with-me"
+                  element={<FileManagementPage fileType="shared" />}
+                />
                 <Route path="users" element={<UsersPage />} />
               </Route>
             </Route>

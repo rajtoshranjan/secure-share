@@ -1,4 +1,4 @@
-import { Upload } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import React from 'react';
 import { handleResponseErrorMessage, useUploadFile } from '../../services/apis';
 import { toast } from '../../hooks';
@@ -39,13 +39,22 @@ export const FileUpload = ({ onFileUploadSuccess }: FileUploadProps) => {
   };
 
   return (
-    <div>
+    <div className="group relative rounded-lg border-2 border-dashed border-muted-foreground/25 bg-card p-3 transition-all hover:border-primary/50 hover:bg-accent hover:shadow-lg">
       <label
         htmlFor="file-upload"
-        className="flex cursor-pointer items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-secondary hover:bg-primary/90"
+        className="flex cursor-pointer flex-col items-center justify-center"
       >
-        <Upload className="size-4" />
-        Upload File
+        <div className="mb-2 flex size-8 items-center justify-center rounded-full border-2 border-muted-foreground/25 bg-background/50 group-hover:border-primary/50">
+          <Plus className="size-4 text-muted-foreground group-hover:text-primary" />
+        </div>
+        <div className="space-y-0.5 text-center">
+          <h3 className="text-sm font-medium group-hover:text-primary">
+            New File
+          </h3>
+          <div className="text-[11px] text-muted-foreground group-hover:text-primary/80">
+            <span>Click to browse files</span>
+          </div>
+        </div>
       </label>
       <input
         id="file-upload"

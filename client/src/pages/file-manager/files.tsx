@@ -1,5 +1,6 @@
+import { FileX } from 'lucide-react';
 import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui';
+import { ScrollArea, Spinner } from '../../components/ui';
 import { toast } from '../../hooks/use-toast';
 import {
   FileData,
@@ -11,12 +12,18 @@ import {
 } from '../../services/apis';
 import { useAppSelector } from '../../store/hooks';
 import { selectActiveDrive } from '../../store/slices';
+import { FileCard } from './file-card';
+import { FilePermissionsDialog } from './file-permissions-dialog';
 import { FileShareDialog } from './file-share-dialog';
 import { FileUpload } from './file-upload';
-import { FileTable } from './files-table';
-import { FilePermissionsDialog } from './file-permissions-dialog';
 
-export function FileManagementPage() {
+type FileManagementPageProps = {
+  fileType?: 'drive' | 'shared';
+};
+
+export function FileManagementPage({
+  fileType = 'drive',
+}: FileManagementPageProps) {
   const { activeDriveId } = useAppSelector(selectActiveDrive);
 
   // States.
@@ -29,13 +36,10 @@ export function FileManagementPage() {
     data: filesResponse,
     isLoading: isLoadingFiles,
     refetch: refetchFiles,
-  } = useGetFiles(activeDriveId ?? '');
+  } = useGetFiles(activeDriveId ?? '', fileType === 'drive');
 
-  const {
-    data: sharedFilesResponse,
-    isLoading: isLoadingSharedFiles,
-    refetch: refetchSharedFiles,
-  } = useGetSharedFiles(false);
+  const { data: sharedFilesResponse, isLoading: isLoadingSharedFiles } =
+    useGetSharedFiles(fileType === 'shared');
 
   const { mutate: deleteFile } = useDeleteFile();
   const { mutate: downloadFile } = useDownloadFile();
@@ -100,46 +104,86 @@ export function FileManagementPage() {
     setIsPermissionsModalOpen(true);
   };
 
-  const handleTabChange = (value: string) => {
-    if (value === 'shared') {
-      refetchSharedFiles();
-    }
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">File Management</h1>
-        <FileUpload onFileUploadSuccess={refetchFiles} />
+    <div className="space-y-2">
+      <div className="flex flex-col gap-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            {fileType === 'drive' ? 'My Files' : 'Shared with Me'}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {fileType === 'drive'
+              ? "View and manage your drive's files and documents"
+              : 'Access files that others have shared with you'}
+          </p>
+        </div>
       </div>
 
-      <Tabs
-        defaultValue="personal"
-        className="w-full"
-        onValueChange={handleTabChange}
-      >
-        <TabsList>
-          <TabsTrigger value="personal">My Files</TabsTrigger>
-          <TabsTrigger value="shared">Shared Files</TabsTrigger>
-        </TabsList>
-        <TabsContent value="personal">
-          <FileTable
-            files={filesResponse?.data || []}
-            onShare={handleShare}
-            onDelete={handleDelete}
-            onDownload={handleDownload}
-            onManagePermissions={handleManagePermissions}
-            isLoading={isLoadingFiles}
-          />
-        </TabsContent>
-        <TabsContent value="shared">
-          <FileTable
-            files={sharedFiles}
-            onDownload={handleDownload}
-            isLoading={isLoadingSharedFiles}
-          />
-        </TabsContent>
-      </Tabs>
+      <ScrollArea className="h-[calc(100vh-17rem)] w-full  md:h-[calc(100vh-16rem)]">
+        <div className="w-full py-4">
+          {/* Drive Files */}
+          {fileType === 'drive' && (
+            <>
+              {isLoadingFiles ? (
+                <div className="flex justify-center p-8">
+                  <Spinner />
+                </div>
+              ) : filesResponse?.data.length === 0 ? (
+                <div className="flex items-center justify-center gap-3 p-8 text-muted-foreground">
+                  <FileX className="size-5" />
+                  <span>No files found</span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  <FileUpload onFileUploadSuccess={refetchFiles} />
+                  {filesResponse?.data.map((file) => {
+                    return (
+                      <FileCard
+                        key={file.id}
+                        file={file}
+                        onShare={() => handleShare(file)}
+                        onDelete={() => handleDelete(file)}
+                        onDownload={() => handleDownload(file)}
+                        onManagePermissions={() =>
+                          handleManagePermissions(file)
+                        }
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Shared Files */}
+          {fileType === 'shared' && (
+            <>
+              {isLoadingSharedFiles ? (
+                <div className="flex justify-center p-8">
+                  <Spinner />
+                </div>
+              ) : sharedFiles.length === 0 ? (
+                <div className="flex items-center justify-center gap-3 p-8 text-muted-foreground">
+                  <FileX className="size-5" />
+                  <span>No shared files found</span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {sharedFiles.map((file) => {
+                    return (
+                      <FileCard
+                        key={file.id}
+                        file={file}
+                        onDownload={() => handleDownload(file)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </ScrollArea>
 
       {/* Dialogs */}
       <FileShareDialog

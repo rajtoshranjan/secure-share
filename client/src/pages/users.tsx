@@ -112,66 +112,78 @@ export function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Drive Members</h1>
-        <Dialog open={isAddUserModalOpen} onOpenChange={setIsAddUserModalOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <UserPlus className="mr-2 size-4" />
-              Add Member
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Member</DialogTitle>
-            </DialogHeader>
-            <form
-              onSubmit={form.handleSubmit(handleAddUser)}
-              className="space-y-4"
-            >
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...form.register('email')}
-                  error={form.formState.errors.email?.message}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select
-                  onValueChange={(value) =>
-                    form.setValue('role', value as DriveRole)
-                  }
-                  value={form.watch('role')}
-                >
-                  <SelectTrigger
-                    id="role"
-                    className={
-                      form.formState.errors.role ? 'border-destructive' : ''
-                    }
-                  >
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="regular">Regular</SelectItem>
-                    <SelectItem value="guest">Guest</SelectItem>
-                  </SelectContent>
-                </Select>
-                {form.formState.errors.role && (
-                  <p className="text-sm text-destructive">
-                    {form.formState.errors.role.message}
-                  </p>
-                )}
-              </div>
-              <Button type="submit" className="w-full">
+      <div className="flex flex-col gap-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Drive Members
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Add and manage members who can access the drive
+          </p>
+        </div>
+        <div className="flex items-center">
+          <Dialog
+            open={isAddUserModalOpen}
+            onOpenChange={setIsAddUserModalOpen}
+          >
+            <DialogTrigger asChild>
+              <Button>
+                <UserPlus className="mr-2 size-4" />
                 Add Member
               </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Member</DialogTitle>
+              </DialogHeader>
+              <form
+                onSubmit={form.handleSubmit(handleAddUser)}
+                className="space-y-4"
+              >
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    {...form.register('email')}
+                    error={form.formState.errors.email?.message}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="role">Role</Label>
+                  <Select
+                    onValueChange={(value) =>
+                      form.setValue('role', value as DriveRole)
+                    }
+                    value={form.watch('role')}
+                  >
+                    <SelectTrigger
+                      id="role"
+                      className={
+                        form.formState.errors.role ? 'border-destructive' : ''
+                      }
+                    >
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="regular">Regular</SelectItem>
+                      <SelectItem value="guest">Guest</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {form.formState.errors.role && (
+                    <p className="text-sm text-destructive">
+                      {form.formState.errors.role.message}
+                    </p>
+                  )}
+                </div>
+                <Button type="submit" className="w-full">
+                  Add Member
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <Table>
