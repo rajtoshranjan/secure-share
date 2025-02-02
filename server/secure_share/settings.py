@@ -19,7 +19,6 @@ from pathlib import Path
 
 from corsheaders.defaults import default_headers
 from django.utils.translation import gettext_lazy as _
-
 from utils.parsers import unwrap_boolean, unwrap_list
 
 from .env_variables import EnvVariable
@@ -98,11 +97,17 @@ WSGI_APPLICATION = "secure_share.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": EnvVariable.DB_NAME.value,
+        "USER": EnvVariable.DB_USER.value,
+        "PASSWORD": EnvVariable.DB_PASSWORD.value,
+        "HOST": EnvVariable.DB_HOST.value,
+        "PORT": EnvVariable.DB_PORT.value,
+        "OPTIONS": {
+            "pool": True,
+        },
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
