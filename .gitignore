@@ -7,3 +7,6 @@
 .env.development
 .env.production
 .venv
+
+# DB.
+postgres-data/

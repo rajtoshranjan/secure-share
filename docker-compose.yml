@@ -1,6 +1,15 @@
 version: "3.8"
 
 services:
+  db:
+    image: postgres:17-alpine
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
   server:
     build:
       context: ./server
@@ -12,6 +21,8 @@ services:
       # TODO: Use .env.development.
       - .env.template
     command: uvicorn secure_share.asgi:application --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
 
   client:
     build:
