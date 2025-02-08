@@ -23,7 +23,7 @@ class DriveViewSet(ModelViewSet):
     def get_queryset(self):
         return Drive.objects.filter(
             Q(members__user=self.request.user) | Q(owner=self.request.user)
-        )
+        ).distinct()
 
     def perform_destroy(self, instance):
         raise PermissionDenied("Deleting a drive is not allowed")

@@ -19,6 +19,7 @@ from pathlib import Path
 
 from corsheaders.defaults import default_headers
 from django.utils.translation import gettext_lazy as _
+
 from utils.parsers import unwrap_boolean, unwrap_list
 
 from .env_variables import EnvVariable
