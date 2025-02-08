@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2, UserPlus } from 'lucide-react';
+import { Trash2, UserPlus, Mail, User } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
@@ -40,7 +40,6 @@ import { selectActiveDrive } from '../store/slices/drive-slice';
 export function UsersPage() {
   // Store.
   const { canManageUsers } = useAppSelector(selectActiveDrive);
-
   const { activeDriveId } = useAppSelector(selectActiveDrive);
 
   // States.
@@ -186,64 +185,79 @@ export function UsersPage() {
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isPending ? (
+      <div className="rounded-lg border">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={4} className="text-center">
-                <Spinner />
-              </TableCell>
+              <TableHead>User</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead className="w-[100px]">Actions</TableHead>
             </TableRow>
-          ) : membersResponse?.data.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={4} className="h-24 text-center">
-                No members found
-              </TableCell>
-            </TableRow>
-          ) : (
-            membersResponse?.data.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell className="font-medium">{member.userName}</TableCell>
-                <TableCell>{member.userEmail}</TableCell>
-                <TableCell>
-                  <Select
-                    defaultValue={member.role}
-                    onValueChange={(value) =>
-                      handleUpdateRole(member.id, value as DriveRole)
-                    }
-                  >
-                    <SelectTrigger className="w-[150px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="regular">Regular</SelectItem>
-                      <SelectItem value="guest">Guest</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(member.id)}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
+          </TableHeader>
+          <TableBody>
+            {isPending ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center">
+                  <div className="flex justify-center">
+                    <Spinner />
+                  </div>
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : membersResponse?.data.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} className="h-24 text-center">
+                  No members found
+                </TableCell>
+              </TableRow>
+            ) : (
+              membersResponse?.data.map((member) => (
+                <TableRow key={member.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
+                        <User className="size-5 text-secondary-foreground" />
+                      </div>
+                      <div>
+                        <div className="font-medium">{member.userName}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {member.userEmail}
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      defaultValue={member.role}
+                      onValueChange={(value) =>
+                        handleUpdateRole(member.id, value as DriveRole)
+                      }
+                    >
+                      <SelectTrigger className="w-[130px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="regular">Regular</SelectItem>
+                        <SelectItem value="guest">Guest</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(member.id)}
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

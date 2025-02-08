@@ -8,6 +8,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TooltipContent,
+  Tooltip,
+  TooltipTrigger,
 } from '../../../components/ui';
 import {
   useFileSharedLinks,
@@ -97,7 +100,12 @@ export const SharedLinks = ({ fileId }: ShareLinksProps) => {
                       className="size-6"
                       onClick={() => handleCopyLink(link.slug)}
                     >
-                      <Copy className="size-3" />
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Copy className="size-3" />
+                        </TooltipTrigger>
+                        <TooltipContent>Copy link</TooltipContent>
+                      </Tooltip>
                     </Button>
                   </TableCell>
                   <TableCell className="whitespace-nowrap">
