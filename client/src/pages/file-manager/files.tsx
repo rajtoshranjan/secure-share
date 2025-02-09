@@ -1,7 +1,18 @@
 import { FileX } from 'lucide-react';
 import { useState } from 'react';
 import { isNil } from 'lodash';
-import { ScrollArea, Spinner } from '../../components/ui';
+import {
+  ScrollArea,
+  Spinner,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../../components/ui';
 import { toast } from '../../hooks/use-toast';
 import {
   FileData,
@@ -31,6 +42,7 @@ export function FileManagementPage({
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeFile, setActiveFile] = useState<FileData | null>(null);
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState<FileData | null>(null);
 
   // Queries.
   const {
@@ -92,6 +104,7 @@ export function FileManagementPage({
     deleteFile(file.id, {
       onSuccess: () => {
         refetchFiles();
+        setFileToDelete(null);
         toast({
           title: 'File deleted successfully',
           description: file.name,
@@ -156,7 +169,7 @@ export function FileManagementPage({
                         key={file.id}
                         file={file}
                         onShare={() => handleShare(file)}
-                        onDelete={() => handleDelete(file)}
+                        onDelete={() => setFileToDelete(file)}
                         onDownload={() => handleDownload(file)}
                         onManagePermissions={() =>
                           handleManagePermissions(file)
@@ -212,6 +225,32 @@ export function FileManagementPage({
         onOpenChange={setIsPermissionsModalOpen}
         file={activeFile}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!fileToDelete}
+        onOpenChange={() => setFileToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete{' '}
+              <span className="font-semibold">{fileToDelete?.name}</span>? Once
+              deleted, you won&apos;t be able to recover this file.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => fileToDelete && handleDelete(fileToDelete)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

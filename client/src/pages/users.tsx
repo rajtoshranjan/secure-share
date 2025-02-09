@@ -1,13 +1,5 @@
 import { useState } from 'react';
-import {
-  Trash2,
-  UserPlus,
-  Mail,
-  User,
-  Users,
-  Shield,
-  Settings,
-} from 'lucide-react';
+import { Trash2, UserPlus, User, Users, Shield, Settings } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../store/hooks';
@@ -33,6 +25,14 @@ import {
   TableRow,
   Spinner,
   ScrollArea,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from '../components/ui';
 import { toast } from '../hooks/use-toast';
 import {
@@ -53,6 +53,7 @@ export function UsersPage() {
 
   // States.
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
   const form = useForm<AddDriveMemberPayload>({
     defaultValues: {
       role: DriveRole.Guest,
@@ -114,6 +115,7 @@ export function UsersPage() {
         toast({
           title: 'User removed successfully',
         });
+        setMemberToDelete(null);
         refetch();
       },
       onError: (error) => {
@@ -275,7 +277,7 @@ export function UsersPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDelete(member.id)}
+                        onClick={() => setMemberToDelete(member.id)}
                         className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                       >
                         <Trash2 className="size-4" />
@@ -288,6 +290,38 @@ export function UsersPage() {
           </Table>
         </div>
       </ScrollArea>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!memberToDelete}
+        onOpenChange={() => setMemberToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove{' '}
+              <span className="font-semibold">
+                {
+                  membersResponse?.data.find((m) => m.id === memberToDelete)
+                    ?.userName
+                }
+              </span>{' '}
+              from this drive? Once removed, they will no longer have access to
+              any files in this drive.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => memberToDelete && handleDelete(memberToDelete)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
