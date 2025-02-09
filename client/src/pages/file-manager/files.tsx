@@ -136,7 +136,7 @@ export function FileManagementPage({
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100dvh-17rem)] w-full  md:h-[calc(100dvh-16rem)]">
+      <ScrollArea className="h-[calc(100dvh-14rem)] w-full  md:h-[calc(100dvh-16rem)]">
         <div className="w-full py-4">
           {/* Drive Files */}
           {fileType === 'drive' && (
