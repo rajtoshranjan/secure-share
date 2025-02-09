@@ -136,7 +136,7 @@ export function FileManagementPage({
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-17rem)] w-full  md:h-[calc(100vh-16rem)]">
+      <ScrollArea className="h-[calc(100dvh-17rem)] w-full  md:h-[calc(100dvh-16rem)]">
         <div className="w-full py-4">
           {/* Drive Files */}
           {fileType === 'drive' && (
@@ -146,7 +146,7 @@ export function FileManagementPage({
                   <Spinner />
                 </div>
               ) : filesResponse?.data.length === 0 ? (
-                <div className="flex min-h-[50vh] flex-col items-center justify-center gap-8 p-8 text-muted-foreground">
+                <div className="flex min-h-[50dvh] flex-col items-center justify-center gap-8 p-8 text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <FileX className="size-5" />
                     <span>No files found</span>
@@ -190,7 +190,7 @@ export function FileManagementPage({
                   <Spinner />
                 </div>
               ) : sharedFiles.length === 0 ? (
-                <div className="flex min-h-[50vh] flex-col items-center justify-center gap-8 p-8 text-muted-foreground">
+                <div className="flex min-h-[50dvh] flex-col items-center justify-center gap-8 p-8 text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <FileX className="size-5" />
                     <span>No shared files found</span>

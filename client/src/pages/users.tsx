@@ -200,7 +200,7 @@ export function UsersPage() {
         </div>
       </div>
 
-      <div className="h-[calc(100vh-18rem)] w-full overflow-auto md:h-[calc(100vh-16rem)]">
+      <div className="h-[calc(100dvh-18rem)] w-full overflow-auto md:h-[calc(100dvh-16rem)]">
         <div className="rounded-lg border">
           <Table>
             <TableHeader className="bg-secondary/50">
