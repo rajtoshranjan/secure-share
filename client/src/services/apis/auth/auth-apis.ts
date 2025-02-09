@@ -165,6 +165,7 @@ export const useDeactivateMFA = () =>
 export const useLogout = () =>
   useMutation({
     mutationFn: logoutRequest,
+    retry: false,
   });
 
 export const useGetUserInfo = () =>
